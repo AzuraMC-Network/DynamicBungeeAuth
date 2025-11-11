@@ -4,57 +4,115 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
-public class ChatListener
-implements Listener {
-    private DBAPlugin plugin;
-    private int Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * @author an5w1r@163.com
+ */
+public class ChatListener implements Listener {
+    private static final Set<String> ALLOWED_COMMANDS = new HashSet<>(Arrays.asList(
+            "/register", "/login", "/l", "/reg", "/premium"
+    ));
+    private final DBAPlugin plugin;
+    private final int workMethod;
 
     public ChatListener(DBAPlugin plugin) {
         this.plugin = plugin;
-        this.Method = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
+        this.workMethod = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
     }
 
-    @EventHandler(priority=64)
-    public void onPlayerChat(ChatEvent chatEvent) {
-        final ProxiedPlayer proxiedPlayer = (ProxiedPlayer)chatEvent.getSender();
-        PlayerData playerData = this.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName());
-        String string = chatEvent.getMessage();
-        String[] stringArray = string.split(" ");
-        String string2 = stringArray[0];
-        if (playerData != null) {
-            if (!playerData.isValid() && !playerData.getPassword().equals("null")) {
-                if (string2.equalsIgnoreCase("/register") || string2.equalsIgnoreCase("/login") || string2.equalsIgnoreCase("/l") || string2.equalsIgnoreCase("/reg") || string2.equalsIgnoreCase("/premium")) {
-                    chatEvent.setCancelled(false);
+    @EventHandler(priority = 64)
+    public void onPlayerChat(ChatEvent event) {
+        if (!(event.getSender() instanceof ProxiedPlayer)) {
+            return;
+        }
+
+        final ProxiedPlayer player = (ProxiedPlayer) event.getSender();
+        String message = event.getMessage();
+
+        if (!message.startsWith("/")) {
+            handleNonCommand(event, player);
+            return;
+        }
+
+        handleCommand(event, player, message);
+    }
+
+    private void handleNonCommand(ChatEvent event, ProxiedPlayer player) {
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
+
+        if (playerData == null) {
+            event.setCancelled(true);
+            checkPlayerAndShowMessage(player);
+        } else if (!isPlayerAuthenticated(playerData)) {
+            event.setCancelled(true);
+            PlayersMethods.pMessage(player, 2);
+        }
+    }
+
+    private void handleCommand(ChatEvent event, ProxiedPlayer player, String message) {
+        String command = extractCommand(message);
+
+        if (isAuthCommand(command)) {
+            event.setCancelled(false);
+            return;
+        }
+
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
+
+        if (playerData == null) {
+            event.setCancelled(true);
+            checkPlayerAndShowMessage(player);
+        } else if (!isPlayerAuthenticated(playerData)) {
+            event.setCancelled(true);
+            PlayersMethods.pMessage(player, 2);
+        }
+    }
+
+    private String extractCommand(String message) {
+        String[] parts = message.split(" ");
+        return parts.length > 0 ? parts[0] : message;
+    }
+
+    private boolean isAuthCommand(String command) {
+        return ALLOWED_COMMANDS.stream()
+                .anyMatch(allowed -> allowed.equalsIgnoreCase(command));
+    }
+
+    private boolean isPlayerAuthenticated(PlayerData playerData) {
+        // is premium
+        if (playerData.getPassword().equals("null")) {
+            return true;
+        }
+
+        return playerData.isValid();
+    }
+
+    private void checkPlayerAndShowMessage(final ProxiedPlayer player) {
+        SQL.isPlayerDB(player, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean isRegistered) {
+                if (isRegistered) {
+                    // registered but not login
+                    PlayersMethods.pMessage(player, 2);
                 } else {
-                    PlayersMethods.pMessage(proxiedPlayer, 2);
-                    chatEvent.setCancelled(true);
+                    // not registered
+                    PlayersMethods.pMessage(player, 3);
                 }
             }
-        } else if (string2.equalsIgnoreCase("/register") || string2.equalsIgnoreCase("/login") || string2.equalsIgnoreCase("/l") || string2.equalsIgnoreCase("/reg") || string2.equalsIgnoreCase("/premium")) {
-            chatEvent.setCancelled(false);
-        } else {
-            chatEvent.setCancelled(true);
-            SQL.isPlayerDB(proxiedPlayer, new CallbackSQL<Boolean>(){
 
-                @Override
-                public void done(Boolean bl) {
-                    if (bl) {
-                        PlayersMethods.pMessage(proxiedPlayer, 2);
-                    } else {
-                        PlayersMethods.pMessage(proxiedPlayer, 3);
-                    }
-                }
-
-                @Override
-                public void error(Exception exception) {
-                }
-            });
-        }
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
