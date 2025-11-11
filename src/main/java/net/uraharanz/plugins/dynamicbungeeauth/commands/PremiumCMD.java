@@ -3,7 +3,7 @@ package net.uraharanz.plugins.dynamicbungeeauth.commands;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
@@ -16,11 +16,11 @@ import java.util.UUID;
  * @author an5w1r@163.com
  */
 public class PremiumCMD extends Command {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final int workMethod;
     private final int premiumMode;
 
-    public PremiumCMD(DBAPlugin plugin) {
+    public PremiumCMD(DBABungeePlugin plugin) {
         super("premium", "auth.premium");
         this.plugin = plugin;
         this.workMethod = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");

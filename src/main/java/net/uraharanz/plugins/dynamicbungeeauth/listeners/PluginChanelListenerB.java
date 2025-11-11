@@ -5,7 +5,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -18,7 +18,7 @@ public class PluginChanelListenerB implements Listener {
     private final String premiumChannel;
     private final String crackedChannel;
 
-    public PluginChanelListenerB(DBAPlugin plugin) {
+    public PluginChanelListenerB(DBABungeePlugin plugin) {
         this.premiumChannel = plugin.getConfigLoader().getStringCFG("PluginChannel.premium");
         this.crackedChannel = plugin.getConfigLoader().getStringCFG("PluginChannel.cracked");
     }

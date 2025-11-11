@@ -1,5 +1,5 @@
 name: DynamicBungeeAuth
 version: 10.30B
-main: net.uraharanz.plugins.dynamicbungeeauth.main
+main: net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin
 author: UraharaNZ
 description: Advanced BungeeCord authentication system

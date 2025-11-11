@@ -1,20 +1,20 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.apis;
 
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.apis.PlayerAPI;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 
 import java.util.UUID;
 
 public class ProfileGenerator {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final boolean MojangE;
     private final boolean CloudProtectedE;
     private final boolean MineToolsE;
     private final boolean BauxiteE;
     private static int number;
 
-    public ProfileGenerator(DBAPlugin plugin) {
+    public ProfileGenerator(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.MojangE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.Mojang.Enable");
         this.CloudProtectedE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.CloudProtected.Enable");
@@ -23,7 +23,7 @@ public class ProfileGenerator {
     }
 
     public void Generator(final String string, final CallbackAPI<UUID> callbackAPI) {
-        this.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> {
+        this.plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> {
             block11: {
                 try {
                     PlayerAPI playerAPI = this.plugin.getPlayerAPIList().searchRequest(string);
@@ -48,7 +48,7 @@ public class ProfileGenerator {
                                         ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                         callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                     } else {
-                                        ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.Mojang.Fallback"), new CallbackAPI<String>() {
+                                        ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.Mojang.Fallback"), new CallbackAPI<String>() {
 
                                             @Override
                                             public void done(String string) {
@@ -89,7 +89,7 @@ public class ProfileGenerator {
                                         ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                         callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                     } else {
-                                        ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.CloudProtected.Fallback"), new CallbackAPI<String>() {
+                                        ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.CloudProtected.Fallback"), new CallbackAPI<String>() {
 
                                             @Override
                                             public void done(String string) {
@@ -130,7 +130,7 @@ public class ProfileGenerator {
                                         ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                         callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                     } else {
-                                        ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.MineTools.Fallback"), new CallbackAPI<String>() {
+                                        ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.MineTools.Fallback"), new CallbackAPI<String>() {
 
                                             @Override
                                             public void done(String string) {
@@ -171,7 +171,7 @@ public class ProfileGenerator {
                                             ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                             callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                         } else {
-                                            ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.BauxiteAPI.Fallback"), new CallbackAPI<String>() {
+                                            ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.BauxiteAPI.Fallback"), new CallbackAPI<String>() {
 
                                                 @Override
                                                 public void done(String string) {

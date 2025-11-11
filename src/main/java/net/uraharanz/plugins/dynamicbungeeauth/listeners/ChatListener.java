@@ -4,7 +4,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
@@ -21,10 +21,10 @@ public class ChatListener implements Listener {
     private static final Set<String> ALLOWED_COMMANDS = new HashSet<>(Arrays.asList(
             "/register", "/login", "/l", "/reg", "/premium"
     ));
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final int workMethod;
 
-    public ChatListener(DBAPlugin plugin) {
+    public ChatListener(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.workMethod = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
     }

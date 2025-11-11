@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 
 public class MessageHandler
 {
@@ -12,7 +12,7 @@ public class MessageHandler
     private static final int MAX_PX = 250;
 
     public static void sendCenteredMessage(final ProxiedPlayer proxiedPlayer, String str) {
-        if (!DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.UseCenteredMessages")) {
+        if (!DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.UseCenteredMessages")) {
             proxiedPlayer.sendMessage(sendMSG(str));
         }
         else {

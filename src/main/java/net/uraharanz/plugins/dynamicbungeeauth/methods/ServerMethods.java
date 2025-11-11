@@ -3,24 +3,24 @@ package net.uraharanz.plugins.dynamicbungeeauth.methods;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
 import java.util.List;
 
 public class ServerMethods {
-    private static final List<String> authList = DBAPlugin.plugin.getConfigLoader().getStringListCFG("Servers.Auth");
-    private static final String authError = DBAPlugin.plugin.getConfigLoader().getStringCFG("Servers.AuthError");
-    private static final List<String> lobbyList = DBAPlugin.plugin.getConfigLoader().getStringListCFG("Servers.Lobby");
-    private static final String lobbyError = DBAPlugin.plugin.getConfigLoader().getStringCFG("Servers.LobbyError");
-    private static final boolean connectLastServer = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.ConnectUserLastServer");
+    private static final List<String> authList = DBABungeePlugin.plugin.getConfigLoader().getStringListCFG("Servers.Auth");
+    private static final String authError = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Servers.AuthError");
+    private static final List<String> lobbyList = DBABungeePlugin.plugin.getConfigLoader().getStringListCFG("Servers.Lobby");
+    private static final String lobbyError = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Servers.LobbyError");
+    private static final boolean connectLastServer = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.ConnectUserLastServer");
 
     public static ServerInfo getAuth() {
         if (!authList.isEmpty()) {
             ServerInfo serverInfo = null;
             for (String string : authList) {
-                ServerInfo serverInfo2 = DBAPlugin.plugin.getProxy().getServers().get(string);
+                ServerInfo serverInfo2 = DBABungeePlugin.plugin.getProxy().getServers().get(string);
                 if (serverInfo2 == null) {
                     ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cIf you are seeing this message it is because your configuration in the Lobby/Auth section is wrong because server: " + string + " do not exist in the Bungee configuration.");
                     ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cCheck this image for reference: https://gyazo.com/b09c11a43d47f4011536bcb1a1d1e787");
@@ -35,7 +35,7 @@ public class ServerMethods {
             return serverInfo;
         }
         if (!authError.isEmpty()) {
-            return DBAPlugin.plugin.getProxy().getServerInfo(authError);
+            return DBABungeePlugin.plugin.getProxy().getServerInfo(authError);
         }
         return null;
     }
@@ -44,7 +44,7 @@ public class ServerMethods {
         if (!lobbyList.isEmpty()) {
             ServerInfo serverInfo = null;
             for (String string : lobbyList) {
-                ServerInfo serverInfo2 = DBAPlugin.plugin.getProxy().getServers().get(string);
+                ServerInfo serverInfo2 = DBABungeePlugin.plugin.getProxy().getServers().get(string);
                 if (serverInfo2 == null) {
                     ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cIf you are seeing this message it is because your configuration in the Lobby/Auth section is wrong because server: " + string + " do not exist in the Bungee configuration.");
                     ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cCheck this image for reference: https://gyazo.com/b09c11a43d47f4011536bcb1a1d1e787");
@@ -59,7 +59,7 @@ public class ServerMethods {
             return serverInfo;
         }
         if (!lobbyError.isEmpty()) {
-            return DBAPlugin.plugin.getProxy().getServerInfo(lobbyError);
+            return DBABungeePlugin.plugin.getProxy().getServerInfo(lobbyError);
         }
         return null;
     }
@@ -71,7 +71,7 @@ public class ServerMethods {
                 @Override
                 public void done(String string) {
                     if (string != null && !string.isEmpty()) {
-                        ServerInfo serverInfo = DBAPlugin.plugin.getProxy().getServerInfo(string);
+                        ServerInfo serverInfo = DBABungeePlugin.plugin.getProxy().getServerInfo(string);
                         if (authList.contains(string) || authError.equals(string)) {
                             ServerInfo serverInfo2 = ServerMethods.getLobby();
                             if (serverInfo2 != null) {

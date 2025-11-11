@@ -2,7 +2,7 @@ package net.uraharanz.plugins.dynamicbungeeauth.utils.password;
 
 import com.google.common.hash.Hashing;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 public class HashMethods {
     public static String HashPassword(ProxiedPlayer proxiedPlayer, String string, String string2) {
-        String string3 = DBAPlugin.plugin.getConfigLoader().getStringCFG("Options.PasswordHash");
+        String string3 = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Options.PasswordHash");
         if (string3.equalsIgnoreCase("SHA256")) {
             return HashMethods.SHA256H(string, string2);
         }
@@ -37,7 +37,7 @@ public class HashMethods {
     }
 
     public static void MashMatch(final ProxiedPlayer proxiedPlayer, final String string, final CallbackSQL<Boolean> callbackSQL) {
-        String string2 = DBAPlugin.plugin.getConfigLoader().getStringCFG("Options.PasswordHash");
+        String string2 = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Options.PasswordHash");
         if (string2.equalsIgnoreCase("SHA256")) {
             SQL.getPlayerDataS(proxiedPlayer, "password", new CallbackSQL<String>(){
 

@@ -1,12 +1,12 @@
 package net.uraharanz.plugins.dynamicbungeeauth.loader;
 
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 
 import java.util.HashMap;
 import java.util.List;
 
 public class ConfigLoader {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final HashMap<String, String> configString;
     private final HashMap<String, Boolean> configBoolean;
     private final HashMap<String, Integer> configInteger;
@@ -15,7 +15,7 @@ public class ConfigLoader {
     private final HashMap<String, Integer> messageInteger;
     private final HashMap<String, List<String>> messageStringList;
 
-    public ConfigLoader(DBAPlugin plugin) {
+    public ConfigLoader(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.configString = new HashMap<>();
         this.configBoolean = new HashMap<>();

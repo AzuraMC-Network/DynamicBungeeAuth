@@ -2,7 +2,7 @@ package net.uraharanz.plugins.dynamicbungeeauth.utils.importers;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.PoolManager;
 
 import java.sql.Connection;
@@ -18,12 +18,12 @@ public class SQLImp {
     private static boolean ssl;
 
     public static void connectDB() {
-        address = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.ip");
-        database = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.database");
-        port = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.port");
-        username = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.user");
-        password = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.password");
-        ssl = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Importers.SSL");
+        address = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.ip");
+        database = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.database");
+        port = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.port");
+        username = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.user");
+        password = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.password");
+        ssl = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Importers.SSL");
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setJdbcUrl("jdbc:mysql://" + address + ":" + port + "/" + database + "?useSSL=" + ssl);
         hikariConfig.setUsername(username);

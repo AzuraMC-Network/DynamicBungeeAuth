@@ -4,7 +4,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
@@ -17,9 +17,9 @@ import java.util.concurrent.TimeUnit;
  * @author an5w1r@163.com
  */
 public class CrackedCMD extends Command {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
 
-    public CrackedCMD(DBAPlugin plugin) {
+    public CrackedCMD(DBABungeePlugin plugin) {
         super("cracked", "auth.cracked", "crack");
         this.plugin = plugin;
     }

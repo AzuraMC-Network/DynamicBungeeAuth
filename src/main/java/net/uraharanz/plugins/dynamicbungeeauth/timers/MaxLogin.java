@@ -1,12 +1,12 @@
 package net.uraharanz.plugins.dynamicbungeeauth.timers;
 
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
 
 import java.util.concurrent.TimeUnit;
 
 public class MaxLogin {
-    private static DBAPlugin plugin;
+    private static DBABungeePlugin plugin;
     private static int max;
     private static int seconds;
     private static int currentCount;
@@ -14,7 +14,7 @@ public class MaxLogin {
     private static int mode;
     private static int shield;
 
-    public MaxLogin(DBAPlugin plugin) {
+    public MaxLogin(DBABungeePlugin plugin) {
         MaxLogin.plugin = plugin;
         currentCount = 0;
         max = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.Max");
@@ -56,10 +56,10 @@ public class MaxLogin {
     }
 
     private static void startProtection() {
-        plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> ServerState.setState(ServerState.ATTACK));
+        plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> ServerState.setState(ServerState.ATTACK));
     }
 
     private static void removeProtection(int n) {
-        plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> ServerState.setState(ServerState.NORMAL), n, TimeUnit.SECONDS);
+        plugin.getProxy().getScheduler().schedule(DBABungeePlugin.plugin, () -> ServerState.setState(ServerState.NORMAL), n, TimeUnit.SECONDS);
     }
 }

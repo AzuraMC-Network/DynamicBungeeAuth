@@ -5,21 +5,21 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
 
 /**
  * @author an5w1r@163.com
  */
 public class LobbyCMD extends Command {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
 
-    public LobbyCMD(DBAPlugin plugin) {
+    public LobbyCMD(DBABungeePlugin plugin) {
         super("lobby", "auth.lobby", "hub");
         this.plugin = plugin;
     }
 
-    public LobbyCMD(DBAPlugin plugin, Boolean includeSpawnAlias) {
+    public LobbyCMD(DBABungeePlugin plugin, Boolean includeSpawnAlias) {
         super("lobby", "auth.lobby", "hub", "spawn");
         this.plugin = plugin;
     }

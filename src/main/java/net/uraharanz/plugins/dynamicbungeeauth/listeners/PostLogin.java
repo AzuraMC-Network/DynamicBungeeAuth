@@ -4,7 +4,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
@@ -20,10 +20,10 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
  * @author an5w1r@163.com
  */
 public class PostLogin implements Listener {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final int workMethod;
 
-    public PostLogin(DBAPlugin plugin) {
+    public PostLogin(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.workMethod = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
     }

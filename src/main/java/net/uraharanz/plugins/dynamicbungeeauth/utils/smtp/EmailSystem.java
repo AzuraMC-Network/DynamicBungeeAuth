@@ -1,7 +1,7 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.smtp;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import org.apache.commons.io.IOUtils;
 
 import javax.mail.*;
@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.Properties;
 
 public class EmailSystem {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final String host;
     private final String port;
     private final String user;
@@ -20,7 +20,7 @@ public class EmailSystem {
     private final String file;
     private final String subj;
 
-    public EmailSystem(DBAPlugin plugin) {
+    public EmailSystem(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.host = plugin.getConfigLoader().getStringCFG("SMTP.host");
         this.port = plugin.getConfigLoader().getStringCFG("SMTP.port");

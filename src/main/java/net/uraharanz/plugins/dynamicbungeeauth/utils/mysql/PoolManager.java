@@ -2,7 +2,7 @@ package net.uraharanz.plugins.dynamicbungeeauth.utils.mysql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 
 import java.sql.*;
@@ -33,16 +33,16 @@ public class PoolManager {
                 timezone = Config.get("ConfigS.yml").getString("MySQL.extra");
             }
         } else {
-            address = DBAPlugin.plugin.getConfigLoader().getStringCFG("MySQL.ip");
-            database = DBAPlugin.plugin.getConfigLoader().getStringCFG("MySQL.database");
-            port = DBAPlugin.plugin.getConfigLoader().getStringCFG("MySQL.port");
-            username = DBAPlugin.plugin.getConfigLoader().getStringCFG("MySQL.user");
-            password = DBAPlugin.plugin.getConfigLoader().getStringCFG("MySQL.password");
-            ssl = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("MySQL.ssl");
-            size = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("MySQL.connections");
-            timeout = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("MySQL.timeout");
-            if (DBAPlugin.plugin.getFiles().getCFG().get("MySQL.extra") != null) {
-                timezone = DBAPlugin.plugin.getConfigLoader().getStringCFG("MySQL.extra");
+            address = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("MySQL.ip");
+            database = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("MySQL.database");
+            port = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("MySQL.port");
+            username = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("MySQL.user");
+            password = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("MySQL.password");
+            ssl = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("MySQL.ssl");
+            size = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("MySQL.connections");
+            timeout = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("MySQL.timeout");
+            if (DBABungeePlugin.plugin.getFiles().getCFG().get("MySQL.extra") != null) {
+                timezone = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("MySQL.extra");
             }
         }
         if (size == 0) {
@@ -186,8 +186,8 @@ public class PoolManager {
     }
 
     public static void fetchData() {
-        int n = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxAccountsDefault");
-        int n2 = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxPlayingDefault");
+        int n = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxAccountsDefault");
+        int n2 = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxPlayingDefault");
         PoolManager.execute(connection -> {
             Statement statement = connection.createStatement();
             statement.executeUpdate("INSERT INTO playerip SELECT reg_ip AS ip ,COUNT(reg_ip) AS accounts, 0 as playing, '" + n + "' as max_accounts, '" + n2 + "' as max_playing FROM playerdata GROUP BY reg_ip");

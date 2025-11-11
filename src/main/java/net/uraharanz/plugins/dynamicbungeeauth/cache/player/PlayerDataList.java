@@ -1,6 +1,6 @@
 package net.uraharanz.plugins.dynamicbungeeauth.cache.player;
 
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,11 +9,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class PlayerDataList {
-    public DBAPlugin plugin;
+    public DBABungeePlugin plugin;
     private final Map<String, PlayerData> players;
     private final int cleanIntervalMinutes;
 
-    public PlayerDataList(DBAPlugin plugin) {
+    public PlayerDataList(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.players = new HashMap<>();
         this.cleanIntervalMinutes = plugin.getConfigLoader().getIntegerCFG("Timers.CleanRequest");
@@ -54,7 +54,7 @@ public class PlayerDataList {
     }
 
     public void cleanData() {
-        this.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> {
+        this.plugin.getProxy().getScheduler().schedule(DBABungeePlugin.plugin, () -> {
             Set<String> playersToRemove = new HashSet<>();
             for (Map.Entry<String, PlayerData> entry : this.players.entrySet()) {
                 if (!entry.getValue().isPlaying()) {

@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.md_5.bungee.api.ProxyServer;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 
 import java.io.InputStreamReader;
@@ -14,7 +14,7 @@ import java.net.URL;
 
 public class ProfileAPIS {
     public static void Mojang(String string, CallbackAPI<String> callbackAPI) {
-        DBAPlugin.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> {
+        DBABungeePlugin.plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> {
             try {
                 long l = System.currentTimeMillis();
                 String string2 = "https://api.mojang.com/users/profiles/minecraft/" + string;
@@ -23,7 +23,7 @@ public class ProfileAPIS {
                 httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
                 httpURLConnection.connect();
                 int n = httpURLConnection.getResponseCode();
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                     ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG MOJANG FOR" + string + " : §c" + n);
                 }
                 if (n == 200) {
@@ -34,7 +34,7 @@ public class ProfileAPIS {
                     httpURLConnection.disconnect();
                     ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG MOJANG FOR" + string + " : §c" + jsonObject.get("id").getAsString());
                     long l2 = System.currentTimeMillis();
-                    if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                    if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                         long l3 = l2 - l;
                         ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG MOJANG FOR " + string + " : §c" + l3 + "ms");
                     }
@@ -50,7 +50,7 @@ public class ProfileAPIS {
     }
 
     public static void CloudProtected(String string, CallbackAPI<String> callbackAPI) {
-        DBAPlugin.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> {
+        DBABungeePlugin.plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> {
             try {
                 long l = System.currentTimeMillis();
                 String string2 = "https://mcapi.cloudprotected.net/uuid/" + string;
@@ -59,7 +59,7 @@ public class ProfileAPIS {
                 httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
                 httpURLConnection.connect();
                 int n = httpURLConnection.getResponseCode();
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                     ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG CLOUDPROTECTED FOR " + string + " : §c" + n);
                 }
                 if (n == 200) {
@@ -79,7 +79,7 @@ public class ProfileAPIS {
                         ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG CLOUD FOR " + string + "  §c" + jsonObject2.get("uuid").getAsString());
                     }
                     long l2 = System.currentTimeMillis();
-                    if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                    if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                         long l3 = l2 - l;
                         ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG CLOUDPROTECTED FOR " + string + " : §c" + l3 + "ms");
                     }
@@ -95,7 +95,7 @@ public class ProfileAPIS {
     }
 
     public static void MineTools(String string, CallbackAPI<String> callbackAPI) {
-        DBAPlugin.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> {
+        DBABungeePlugin.plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> {
             try {
                 long l = System.currentTimeMillis();
                 String string2 = "https://api.minetools.eu/uuid/" + string;
@@ -104,7 +104,7 @@ public class ProfileAPIS {
                 httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
                 httpURLConnection.connect();
                 int n = httpURLConnection.getResponseCode();
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                     ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG MINETOOLS FOR " + string + " : §c" + n);
                 }
                 if (n == 200) {
@@ -120,7 +120,7 @@ public class ProfileAPIS {
                         httpURLConnection.disconnect();
                     }
                     long l2 = System.currentTimeMillis();
-                    if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                    if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                         long l3 = l2 - l;
                         ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG MINETOOLS FOR " + string + " : §c" + l3 + "ms");
                     }
@@ -136,7 +136,7 @@ public class ProfileAPIS {
     }
 
     public static void BauxiteAPI(String string, CallbackAPI<String> callbackAPI) {
-        DBAPlugin.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> {
+        DBABungeePlugin.plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> {
             try {
                 long l = System.currentTimeMillis();
                 String string2 = "https://api.bauxitenetwork.net/getuuid/" + string;
@@ -145,7 +145,7 @@ public class ProfileAPIS {
                 httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
                 httpURLConnection.connect();
                 int n = httpURLConnection.getResponseCode();
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                     ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG BAUXITEAPI: §c" + n);
                 }
                 if (n == 200) {
@@ -161,7 +161,7 @@ public class ProfileAPIS {
                         httpURLConnection.disconnect();
                     }
                     long l2 = System.currentTimeMillis();
-                    if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
+                    if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Debug.apis")) {
                         long l3 = l2 - l;
                         ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eAPI DEBUG BAUXITEAPI: §c" + l3 + "ms");
                     }

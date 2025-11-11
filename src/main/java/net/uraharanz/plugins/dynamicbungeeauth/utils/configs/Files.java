@@ -4,17 +4,17 @@ import com.google.common.io.ByteStreams;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 
 import java.io.*;
 
 public class Files {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private Configuration config;
     private ConfigurationProvider configp;
     private File file;
 
-    public Files(DBAPlugin plugin) {
+    public Files(DBABungeePlugin plugin) {
         this.plugin = plugin;
     }
 

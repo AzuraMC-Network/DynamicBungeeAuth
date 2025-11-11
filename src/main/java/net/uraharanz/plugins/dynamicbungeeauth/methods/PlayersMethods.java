@@ -4,7 +4,7 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.spam.SpamPlayer;
@@ -36,7 +36,7 @@ public class PlayersMethods {
      * clean and show successful title
      */
     public static void cleanAndShowSuccessfulTitle(ProxiedPlayer player) {
-        if (!DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Successful")) {
+        if (!DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Successful")) {
             return;
         }
 
@@ -56,12 +56,12 @@ public class PlayersMethods {
      * @param type   type (1=auto, 2=login, 3=register, 10=session)
      */
     public static void pTitles(ProxiedPlayer player, int type) {
-        boolean enableDelay = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
-        int delaySeconds = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
+        boolean enableDelay = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
+        int delaySeconds = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
 
         if (enableDelay) {
-            DBAPlugin.plugin.getProxy().getScheduler().schedule(
-                    DBAPlugin.plugin,
+            DBABungeePlugin.plugin.getProxy().getScheduler().schedule(
+                    DBABungeePlugin.plugin,
                     () -> showTitleByType(player, type),
                     delaySeconds,
                     TimeUnit.SECONDS
@@ -76,28 +76,28 @@ public class PlayersMethods {
 
         switch (type) {
             case MSG_TYPE_AUTO:
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Auto")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Auto")) {
                     configureTitleFromConfig(title, "Titles.auto");
                     title.send(player);
                 }
                 break;
 
             case MSG_TYPE_LOGIN:
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Login")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Login")) {
                     configureTitleFromConfig(title, "Titles.login");
                     title.send(player);
                 }
                 break;
 
             case MSG_TYPE_REGISTER:
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Register")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Register")) {
                     configureRegisterTitle(title, player);
                     title.send(player);
                 }
                 break;
 
             case MSG_TYPE_SESSION:
-                if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Session")) {
+                if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Session")) {
                     configureTitleFromConfig(title, "Titles.session");
                     title.send(player);
                 }
@@ -106,11 +106,11 @@ public class PlayersMethods {
     }
 
     private static void configureTitleFromConfig(Title title, String configPath) {
-        String topMessage = DBAPlugin.plugin.getConfigLoader().getStringMSG(configPath + ".top");
-        String bottomMessage = DBAPlugin.plugin.getConfigLoader().getStringMSG(configPath + ".bottom");
-        int fadeIn = DBAPlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.fadein");
-        int stay = DBAPlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.stay");
-        int fadeOut = DBAPlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.fadeout");
+        String topMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG(configPath + ".top");
+        String bottomMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG(configPath + ".bottom");
+        int fadeIn = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.fadein");
+        int stay = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.stay");
+        int fadeOut = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.fadeout");
 
         title.title(MessageHandler.sendMSG(topMessage));
         title.subTitle(MessageHandler.sendMSG(bottomMessage));
@@ -120,22 +120,22 @@ public class PlayersMethods {
     }
 
     private static void configureRegisterTitle(Title title, ProxiedPlayer player) {
-        String topMessage = DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.top");
+        String topMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG("Titles.register.top");
         title.title(MessageHandler.sendMSG(topMessage));
 
-        boolean captchaEnabled = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
-        String bottomMessage = DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom");
+        boolean captchaEnabled = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+        String bottomMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom");
 
         if (captchaEnabled) {
-            PlayerCache cache = DBAPlugin.plugin.getPlayerCacheList().searchCache(player.getName());
+            PlayerCache cache = DBABungeePlugin.plugin.getPlayerCacheList().searchCache(player.getName());
             bottomMessage = bottomMessage.replaceAll("%captcha%", cache.getCaptcha());
         }
 
         title.subTitle(MessageHandler.sendMSG(bottomMessage));
 
-        int fadeIn = DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein");
-        int stay = DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay");
-        int fadeOut = DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadeout");
+        int fadeIn = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein");
+        int stay = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay");
+        int fadeOut = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadeout");
 
         title.fadeIn(fadeIn);
         title.stay(stay);
@@ -153,12 +153,12 @@ public class PlayersMethods {
             return;
         }
 
-        boolean enableDelay = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
-        int delaySeconds = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
+        boolean enableDelay = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
+        int delaySeconds = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
 
         if (enableDelay) {
-            DBAPlugin.plugin.getProxy().getScheduler().schedule(
-                    DBAPlugin.plugin,
+            DBABungeePlugin.plugin.getProxy().getScheduler().schedule(
+                    DBABungeePlugin.plugin,
                     () -> sendMessageByType(player, type),
                     delaySeconds,
                     TimeUnit.SECONDS
@@ -186,31 +186,31 @@ public class PlayersMethods {
     }
 
     private static void sendAutoMessage(ProxiedPlayer player) {
-        List<String> messages = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.auto");
+        List<String> messages = DBABungeePlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.auto");
         sendFormattedMessages(player, messages, false);
     }
 
     private static void sendLoginMessage(ProxiedPlayer player) {
         addSpamPlayer(player, "LOGIN");
-        List<String> messages = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.login");
+        List<String> messages = DBABungeePlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.login");
         sendFormattedMessages(player, messages, false);
     }
 
     private static void sendRegisterMessage(ProxiedPlayer player) {
         addSpamPlayer(player, "REGISTER");
-        List<String> messages = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.register");
+        List<String> messages = DBABungeePlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.register");
         sendFormattedMessages(player, messages, true);
     }
 
     private static void sendSessionMessage(ProxiedPlayer player) {
-        List<String> messages = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.session");
+        List<String> messages = DBABungeePlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.session");
         sendFormattedMessages(player, messages, false);
     }
 
     private static void sendFormattedMessages(ProxiedPlayer player, List<String> messages, boolean supportCaptcha) {
-        boolean captchaEnabled = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+        boolean captchaEnabled = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
         PlayerCache cache = supportCaptcha && captchaEnabled ?
-                DBAPlugin.plugin.getPlayerCacheList().searchCache(player.getName()) : null;
+                DBABungeePlugin.plugin.getPlayerCacheList().searchCache(player.getName()) : null;
 
         for (int i = 0; i < messages.size(); i++) {
             String message = messages.get(i);
@@ -230,11 +230,11 @@ public class PlayersMethods {
 
     private static void addSpamPlayer(ProxiedPlayer player, String type) {
         SpamPlayer spamPlayer = new SpamPlayer(player.getName(), type, false);
-        DBAPlugin.plugin.getSpamPlayerList().addPlayer(spamPlayer);
+        DBABungeePlugin.plugin.getSpamPlayerList().addPlayer(spamPlayer);
     }
 
     public static void setValidCache(ProxiedPlayer player) {
-        PlayerData playerData = DBAPlugin.plugin.getPlayerDataList().searchPlayer(player.getName());
+        PlayerData playerData = DBABungeePlugin.plugin.getPlayerDataList().searchPlayer(player.getName());
         if (playerData != null) {
             playerData.setValid(true);
             sendVerifyMSG(player);
@@ -254,16 +254,16 @@ public class PlayersMethods {
     }
 
     private static void removePlayerCacheData(String playerName) {
-        DBAPlugin.plugin.getPlayerAPIList().removeRequest(playerName);
-        DBAPlugin.plugin.getPlayerCacheList().removeCache(playerName);
-        DBAPlugin.plugin.getPlayerDataList().removePlayer(playerName);
+        DBABungeePlugin.plugin.getPlayerAPIList().removeRequest(playerName);
+        DBABungeePlugin.plugin.getPlayerCacheList().removeCache(playerName);
+        DBABungeePlugin.plugin.getPlayerDataList().removePlayer(playerName);
     }
 
     public static void updatePlaying(String playerName, boolean isPlaying) {
-        PlayerData playerData = DBAPlugin.plugin.getPlayerDataList().searchPlayer(playerName);
+        PlayerData playerData = DBABungeePlugin.plugin.getPlayerDataList().searchPlayer(playerName);
         if (playerData != null) {
             playerData.setPlaying(isPlaying);
-            DBAPlugin.plugin.getPlayerDataList().modifyPlayer(playerData);
+            DBABungeePlugin.plugin.getPlayerDataList().modifyPlayer(playerData);
         }
     }
 
@@ -285,7 +285,7 @@ public class PlayersMethods {
 
     public static void setPlayerValidPremium(final ProxiedPlayer player, final boolean isPremium) {
         ProxyServer.getInstance().getScheduler().schedule(
-                DBAPlugin.plugin,
+                DBABungeePlugin.plugin,
                 () -> processPremiumValidation(player),
                 2L,
                 TimeUnit.SECONDS
@@ -428,13 +428,13 @@ public class PlayersMethods {
     }
 
     private static void kickForIPLimit(ProxiedPlayer player, String messageKey) {
-        String kickMessage = DBAPlugin.plugin.getConfigLoader().getStringMSG(messageKey);
+        String kickMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG(messageKey);
         player.disconnect(MessageHandler.sendMSG(kickMessage));
     }
 
     public static void setPlayerValidSession(final ProxiedPlayer player) {
         ProxyServer.getInstance().getScheduler().schedule(
-                DBAPlugin.plugin,
+                DBABungeePlugin.plugin,
                 () -> processSessionValidation(player),
                 2L,
                 TimeUnit.SECONDS
@@ -474,8 +474,8 @@ public class PlayersMethods {
                     SQL.mathIPTable(player, "+", "playing", 1);
                     updatePlaying(player.getName(), true);
 
-                    DBAPlugin.plugin.getProxy().getScheduler().schedule(
-                            DBAPlugin.plugin,
+                    DBABungeePlugin.plugin.getProxy().getScheduler().schedule(
+                            DBABungeePlugin.plugin,
                             () -> sendVerifyMSG(player),
                             1L,
                             TimeUnit.SECONDS
@@ -552,7 +552,7 @@ public class PlayersMethods {
                 Timestamp lastJoin = Timestamp.valueOf(lastJoinStr);
                 Timestamp now = new Timestamp(new Date().getTime());
                 long elapsedSeconds = (now.getTime() - lastJoin.getTime()) / 1000L;
-                int maxSessionTime = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.Sessions.MaxTimeToApply");
+                int maxSessionTime = DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("Options.Sessions.MaxTimeToApply");
 
                 callback.done(elapsedSeconds <= maxSessionTime);
             }
@@ -565,7 +565,7 @@ public class PlayersMethods {
     }
 
     public static void verifyIPRegister(final ProxiedPlayer player, final CallbackSQL<Boolean> callback) {
-        if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPRegisterLimit")) {
+        if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPRegisterLimit")) {
             callback.done(true);
             return;
         }
@@ -615,7 +615,7 @@ public class PlayersMethods {
     }
 
     public static void verifyIPPlaying(final ProxiedPlayer player, final CallbackSQL<Boolean> callback) {
-        if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPPlayingLimit")) {
+        if (DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPPlayingLimit")) {
             callback.done(true);
             return;
         }
@@ -659,8 +659,8 @@ public class PlayersMethods {
     }
 
     private static void registerNewIP(final ProxiedPlayer player, final CallbackSQL<Boolean> callback) {
-        DBAPlugin.plugin.getProxy().getScheduler().schedule(
-                DBAPlugin.plugin,
+        DBABungeePlugin.plugin.getProxy().getScheduler().schedule(
+                DBABungeePlugin.plugin,
                 () -> {
                     SQL.registerIP(player, 0);
                     callback.done(true);
@@ -671,7 +671,7 @@ public class PlayersMethods {
     }
 
     public static void verifyNameCheck(final String playerName, final CallbackMET<Boolean> callback) {
-        if (!DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.NameCheck")) {
+        if (!DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.NameCheck")) {
             callback.done(true);
             return;
         }
@@ -694,7 +694,7 @@ public class PlayersMethods {
     }
 
     public static void removePlayerDB(String playerName, String adminName, CallbackAPI<Boolean> callback) {
-        ProxiedPlayer player = DBAPlugin.plugin.getProxy().getPlayer(playerName);
+        ProxiedPlayer player = DBABungeePlugin.plugin.getProxy().getPlayer(playerName);
 
         if (player != null) {
             removeOnlinePlayer(player, playerName, adminName, callback);
@@ -715,7 +715,7 @@ public class PlayersMethods {
             }
         });
 
-        String kickMessage = DBAPlugin.plugin.getConfigLoader()
+        String kickMessage = DBABungeePlugin.plugin.getConfigLoader()
                 .getStringMSG("KickMessages.unregisterkick")
                 .replaceAll("%admin%", adminName);
         player.disconnect(MessageHandler.sendMSG(kickMessage));
@@ -762,7 +762,7 @@ public class PlayersMethods {
     }
 
     private static void logUnregister(String playerName, String adminName) {
-        String logMessage = DBAPlugin.plugin.getConfigLoader()
+        String logMessage = DBABungeePlugin.plugin.getConfigLoader()
                 .getStringMSG("Commands.unregister.console")
                 .replaceAll("%player%", playerName)
                 .replaceAll("%admin%", adminName);
@@ -770,7 +770,7 @@ public class PlayersMethods {
     }
 
     public static void sendToOtherProxy(String senderName, String targetName, CallbackMET<Boolean> callback) {
-        if (!DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.RedisBungee")) {
+        if (!DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.RedisBungee")) {
             callback.done(true);
             return;
         }
@@ -805,7 +805,7 @@ public class PlayersMethods {
     }
 
     private static boolean isVerifiedPlayer(ProxiedPlayer player) {
-        PlayerData playerData = DBAPlugin.plugin.getPlayerDataList().searchPlayer(player.getName());
+        PlayerData playerData = DBABungeePlugin.plugin.getPlayerDataList().searchPlayer(player.getName());
         return playerData != null && playerData.isValid();
     }
 
@@ -828,7 +828,7 @@ public class PlayersMethods {
 
         try {
             dataStream.writeUTF("dba:verifyplayer");
-            String channelName = "dba:" + DBAPlugin.plugin.getConfigLoader().getStringCFG("PluginChannel.verify");
+            String channelName = "dba:" + DBABungeePlugin.plugin.getConfigLoader().getStringCFG("PluginChannel.verify");
             player.getServer().sendData(channelName, outputStream.toByteArray());
             sendDelayedMSG(player);
         } catch (Exception e) {
@@ -838,7 +838,7 @@ public class PlayersMethods {
 
     public static void sendDelayedMSG(ProxiedPlayer player) {
         ProxyServer.getInstance().getScheduler().schedule(
-                DBAPlugin.plugin,
+                DBABungeePlugin.plugin,
                 () -> sendDelayedVerifyMessage(player),
                 1L,
                 TimeUnit.SECONDS
@@ -855,7 +855,7 @@ public class PlayersMethods {
 
         try {
             dataStream.writeUTF("dba:verifyplayer");
-            String channelName = "dba:" + DBAPlugin.plugin.getConfigLoader().getStringCFG("PluginChannel.verify");
+            String channelName = "dba:" + DBABungeePlugin.plugin.getConfigLoader().getStringCFG("PluginChannel.verify");
             player.getServer().sendData(channelName, outputStream.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();

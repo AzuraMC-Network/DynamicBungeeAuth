@@ -1,15 +1,15 @@
 package net.uraharanz.plugins.dynamicbungeeauth.cache.fix;
 
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class FixList {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
     private final Map<String, Fix> fixes;
 
-    public FixList(DBAPlugin plugin) {
+    public FixList(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.fixes = new HashMap<>();
     }

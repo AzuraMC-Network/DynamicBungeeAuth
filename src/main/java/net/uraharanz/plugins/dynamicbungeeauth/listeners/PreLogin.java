@@ -4,7 +4,7 @@ import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
@@ -22,7 +22,7 @@ import java.util.UUID;
  * @author an5w1r@163.com
  */
 public class PreLogin implements Listener {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
 
     private static final int MIN_NAME_LENGTH = 3;
     private static final int MAX_NAME_LENGTH = 16;
@@ -36,7 +36,7 @@ public class PreLogin implements Listener {
     private final String nameCheckMessage;
     private final boolean floodgateAutoRegister;
 
-    public PreLogin(DBAPlugin plugin) {
+    public PreLogin(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.workMethod = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
         this.captchaLength = plugin.getConfigLoader().getIntegerCFG("Options.CaptchaLength");

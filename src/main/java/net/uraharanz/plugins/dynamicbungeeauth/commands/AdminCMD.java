@@ -4,7 +4,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
@@ -22,9 +22,9 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
  * @author an5w1r@163.com
  */
 public class AdminCMD extends Command {
-    private final DBAPlugin plugin;
+    private final DBABungeePlugin plugin;
 
-    public AdminCMD(DBAPlugin plugin) {
+    public AdminCMD(DBABungeePlugin plugin) {
         super("authadmin", "auth.admin");
         this.plugin = plugin;
     }
