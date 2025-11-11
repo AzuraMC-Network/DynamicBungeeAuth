@@ -1,0 +1,75 @@
+# ________                              .__      __________                                      _____          __  .__
+# \______ \ ___.__. ____ _____    _____ |__| ____\______   \__ __  ____    ____   ____   ____   /  _  \  __ ___/  |_|  |__
+#  |    |  <   |  |/    \\__  \  /     \|  |/ ___\|    |  _/  |  \/    \  / ___\_/ __ \_/ __ \ /  /_\  \|  |  \   __\  |  \
+#  |    `   \___  |   |  \/ __ \|  Y Y  \  \  \___|    |   \  |  /   |  \/ /_/  >  ___/\  ___//    |    \  |  /|  | |   Y  \
+# /_______  / ____|___|  (____  /__|_|  /__|\___  >______  /____/|___|  /\___  / \___  >\___  >____|__  /____/ |__| |___|  /
+#         \/\/         \/     \/      \/        \/       \/           \//_____/      \/     \/        \/                 \/
+#
+#                                      Author: UraharaNZ         Version: 10.30B
+#
+#
+SetupMode: true
+
+# Enable MySQL if you will use the API of the plugin
+MySQL:
+  UseSQL: false
+  ip: 'localhost'
+  port: '3306'
+  database: 'DynamicBungeeAuth'
+  user: 'DynamicBungeeAuth'
+  password: 'yourpasswordhere'
+  ssl: false
+  # Change the timezone of the connection if you have error with this.
+  extra: 'serverTimezone=GMT-4'
+
+# Make sure this value are the same on your BUNGEECORD DBA CONFIG!
+PluginChannel:
+  verify: 'cxzscelefp'
+  premium: 'usxqtqikyw'
+  cracked: 'agvcarahxe'
+
+Options:
+  # MaxTime = Once th player has reached the max time they will be kicked with a message (60 is recommended)
+  MaxTime: 60
+  # Disable the join messages of spigot
+  DisableJoinMSG: true
+  DisableLeaveMSG: true
+  # BlindnessD = Set this to true to disable blindness on join
+  BlindnessD: false
+  # Enable AntiStuck if a server goes down and the player has been redirected to an AuthServer
+  # The plugin will send the player if he is still a valid player "Logged in" to the Specified Server
+  # Delay is on seconds recommended to be higher than 2
+  AntiStuck:
+    Enable: true
+    Delay: 3
+    Server: 'Lobby01'
+
+# Player options for when the player joins pre login or register.
+PlayerOptions:
+  BlockMovement: true
+  BlockInteract: true
+  BlockDrop: true
+  BlockPickup: true
+  BlockInventoryOpen: true
+  BlockItemHeld: true
+  BlockFallDamage: true
+
+# Disable Weather and Rain on the Spigot Server.
+WorldOptions:
+  DisableRain: true
+  DisableFood: true
+
+# The message to be displayed when the player reaches MaxTime without logging in or registering successfully
+Messages:
+  MaxTimeKick: '&cYou reach the max time to login or register.'
+
+# Set the spawn location of the server, Enable or Disable the Force Spawn Location on join!
+Location:
+  Disable: false
+  Cords:
+    world: ''
+    yaw: ''
+    pitch: ''
+    x: ''
+    y: ''
+    z: ''

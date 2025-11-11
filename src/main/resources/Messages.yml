@@ -1,0 +1,256 @@
+AutoMessages:
+  register:
+    - '&8&m----------------------------------------------------'
+    - ''
+    - '&eYou need to register first, please use'
+    - ''
+    - '&a/register password password &c%captcha%'
+    - ''
+    - '&8&m----------------------------------------------------'
+  login:
+    - '&8&m----------------------------------------------------'
+    - ''
+    - '&eYou need to login to play on this server, please use'
+    - ''
+    - '&a/login password'
+    - ''
+    - '&8&m----------------------------------------------------'
+  auto:
+    - '&8&m----------------------------------------------------'
+    - ''
+    - '&eYou have been auto-logged as a premium user'
+    - ''
+    - '&8&m----------------------------------------------------'
+  session:
+    - '&8&m----------------------------------------------------'
+    - ''
+    - '&eYou have been logged in to your previous session'
+    - ''
+    - '&8&m----------------------------------------------------'
+
+KickMessages:
+  register: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &eYou have exceeded the time to register
+    &ePlease try again!
+
+    &8&m-------------------------------------------
+  login: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &eYou have exceeded the time to login
+    &ePlease try again!
+
+    &8&m-------------------------------------------
+  MaxLogin: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &ePlease try join later, the connection limit has been reached
+
+    &8&m-------------------------------------------
+  MaxLoginCracked: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &ePlease try join later, too many cracked user have attempted to log in.
+
+    &8&m-------------------------------------------
+  PremiumKick: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &ePlease reconnect to the server to apply the changes.
+
+    &8&m-------------------------------------------
+  unregisterkick: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &eYou have been un-registered by an admin > %admin%
+
+    &8&m-------------------------------------------
+  NameCheck: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &eYour name has already been registered with a different NameCase
+
+    &8&m-------------------------------------------
+  MaxAccountsIP: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &cYour IP has to many accounts registered on this server.
+
+    &8&m-------------------------------------------
+  MaxPlayingIP: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &cYour IP has to many accounts playing at the moment.
+
+    &8&m-------------------------------------------
+  ClearCache: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &cYour data has ben cleared join again please.
+
+    &8&m-------------------------------------------
+  Logout: |-
+    &8&m-------------------------------------------
+
+    &aYour Minecraft Server Name
+
+    &cYour session has been closed :).
+
+    &8&m-------------------------------------------
+
+
+Titles:
+  register:
+    top: '&aPLEASE REGISTER'
+    bottom: '&eYour captcha is: &c%captcha%'
+    options:
+      fadein: 20
+      fadeout: 20
+      stay: 200
+  login:
+    top: '&aPLEASE LOGIN'
+    bottom: '&eUse /login pass'
+    options:
+      fadein: 20
+      fadeout: 20
+      stay: 200
+  auto:
+    top: '&aAuto-Logged'
+    bottom: '&eThanks for playing with us :D!'
+    options:
+      fadein: 20
+      fadeout: 20
+      stay: 200
+  successful:
+    top: '&aThanks for Playing with us'
+    bottom: '&eEnjoy the server :D!'
+    options:
+      fadein: 20
+      fadeout: 20
+      stay: 200
+  session:
+    top: '&aSession Resumed'
+    bottom: '&eEnjoy the server :D!'
+    options:
+      fadein: 20
+      fadeout: 20
+      stay: 200
+
+Commands:
+  register:
+    exist: '&cThis player is already registered.'
+    wrong: '&cYou used the register command incorrectly, use &e/register pass pass'
+    non_captcha: '&cYou forgot to put the captcha at the end: %captcha%'
+    wrong_captcha: '&cCaptcha incorrect your captcha is: %captcha%'
+    bannedpw: '&cThis password is too easy and/or banned from this server'
+    to_short: '&cYour password is too short'
+    to_long: '&cYour password is too long'
+    registering: '&aTrying to register your account'
+    success: '&aYour account was successfully registered, have fun!'
+  login:
+    already: '&cYou are already connected. OmegaLuL'
+    wrong_pass: '&cIncorrect password. Try again'
+    wrong_kick: '&cIncorrect password. Try again'
+    correct: '&aAccount successfully logged in, have fun :)!'
+    wrong_cmd: '&cYou used the login command incorrectly, use &e/login pass'
+    register_first: '&cYou need to register first.'
+  cracked:
+    already: '&cThis account is already set as cracked. You can also try /premium'
+    successful: '&cYour account cache was cleared by an admin, please re-join.'
+    exception: '&cThis account is not registered on the server'
+  premium:
+    successful: '&aYour account has been set to premium please rejoin the server.'
+    on_list: '&cThis account is already on the list please rejoin to apply changes.'
+    error: '&cSomething weird happened please contact a staff member!'
+    already_premium: '&cThis account is already set to premium, this command will not work!'
+    not_registered: '&aYou first need to register your account to use /premium'
+    not_mojang: '&cThis account does not exist on mojangs system'
+    deactivated: '&cThis command has been disabled'
+    only_player: '&cThis command only works on players'
+    wrong_method: '&cThis command does not work with this method'
+    require_login: '&cThis command only work if y ou are logged. Please use /login pass'
+  unregister:
+    correct: '&aCorrect usage: &c/authadmin forcelogin %player%'
+    console: '&aThe user %player% was un-registered by %admin%'
+    success: '&aThe player was un-registered correctly'
+  disableshield:
+    success: '&cThe shield has ben disabled correctly, now all the players can join'
+    wrong: '&cThis server does not use the protection with shield mode.'
+  cacheclear:
+    correct: '&aCorrect usage: &c/authadmin playercacheclear %player%'
+    success: '&aThe cache for %player% was cleared from the server'
+    player_msg: '&cYour player info was removed from the cache by an admin, try join again.'
+  changepassword:
+    not: '&cYou need to register first...'
+    wrong: '&cCorrect usage is: &a/changepassword current_pass new_pass'
+    same: '&cYour new password is the same as the old one, please try with a different password.'
+    successful: '&cYour account password has been updated correctly'
+    incorrect: '&cYour current password is not the same as the registered password.'
+  premium_adm:
+    wrong: '&cCorrect usage is: /authadmin premium nick'
+    already: '&cThis account is already set to premium'
+    sucess: '&aThis account  is now is set as premium'
+    not_registered: '&cThis account does not exist on this server'
+  cracked_adm:
+    wrong: '&cCorrect usage is: /authadmin cracked nick'
+    already: '&cThis account is already cracked'
+    sucess: '&aThis account has now been set to cracked'
+    not_registered: '&cThis account does not exist on this server'
+  fetchdata: '&aThe command is processing and the result will be displayed on your DATABASE "playerip" Table'
+  redis: '&aThe command was executed on the player proxy'
+  rediserror: '&cThe player isn''t online or RedisBungee isn''t installed.'
+  playerip:
+    ipnotfound: '&cThe player ip isn''t registered on the database'
+    addaccount: '&aAdded 1 account to the ip of the player %player%'
+    minusaccount: '&aRemoved 1 account to the ip of the player %player%'
+    addplaying: '&aAdded 1 account to the ip of the player %player%'
+    minusplaying: '&aRemoved 1 account to the ip of the player %player%'
+    delete: '&aThe %player% IP was deleted from the database'
+  forcelogin:
+    success: '&cYou were logged by staff: &e%staff_name%'
+    offline: '&cThe user %player% isn''t connected to the server'
+    not_registered: '&cThis account does not exist on this server'
+
+HelpADM:
+  - '/authadmin unregister <nick>'
+  - '/authadmin clearcache <nick>'
+  - '/authadmin disableshield'
+  - '/authadmin clearnames'
+  - '/authadmin premium <nick>'
+  - '/authadmin cracked <nick>'
+  - '/authadmin fetchada'
+  - '/authadmin forcelogin <nick>'
+  - '/authadmin playerip "for the player ip help"'
+
+HelpPlayerIP:
+  - '/authadmin playerip accounts add <nick>'
+  - '/authadmin playerip accounts minus <nick>'
+  - '/authadmin playerip max_accounts add <nick>'
+  - '/authadmin playerip max_accounts minus <nick>'
+  - '/authadmin playerip playing add <nick>'
+  - '/authadmin playerip playing minus <nick>'
+  - '/authadmin playerip max_playing add <nick>'
+  - '/authadmin playerip max_playing minus <nick>'
+  - '/authadmin playerip delete nick'

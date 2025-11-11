@@ -1,0 +1,17 @@
+package net.uraharanz.plugins.dynamicbungeeauth.cache.fix;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class Fix {
+    private String name;
+    private String uuid;
+
+    public Fix(String string, String string2) {
+        this.name = string;
+        this.uuid = string2;
+    }
+
+}

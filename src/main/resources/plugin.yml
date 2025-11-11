@@ -1,0 +1,12 @@
+name: DynamicBungeeAuth
+version: 10.30B
+author: UraharaNZ
+main: net.uraharanz.plugins.dynamicbungeeauth.spigot.main
+description: AuthSystem plugin
+commands:
+  setlocation:
+    description: Set the spawn location.
+  premiumspigot:
+    description: premium command to be executed in bungeecord
+  crackedspigot:
+    description: cracked command to be executed in bungeecord

@@ -1,0 +1,208 @@
+# ________                              .__      __________                                      _____          __  .__
+# \______ \ ___.__. ____ _____    _____ |__| ____\______   \__ __  ____    ____   ____   ____   /  _  \  __ ___/  |_|  |__
+#  |    |  <   |  |/    \\__  \  /     \|  |/ ___\|    |  _/  |  \/    \  / ___\_/ __ \_/ __ \ /  /_\  \|  |  \   __\  |  \
+#  |    `   \___  |   |  \/ __ \|  Y Y  \  \  \___|    |   \  |  /   |  \/ /_/  >  ___/\  ___//    |    \  |  /|  | |   Y  \
+# /_______  / ____|___|  (____  /__|_|  /__|\___  >______  /____/|___|  /\___  / \___  >\___  >____|__  /____/ |__| |___|  /
+#         \/\/         \/     \/      \/        \/       \/           \//_____/      \/     \/        \/                 \/
+#
+#                                      Author: UraharaNZ         Version: 10.30B
+#
+#
+
+# MySQL must be configured here, restart the server after saving the config!
+MySQL:
+  ip: 'localhost'
+  port: '3306'
+  database: 'DynamicBungeeAuth'
+  user: 'DynamicBungeeAuth'
+  password: 'yourpasswordhere'
+  ssl: false
+  # Set max connection the pool can  have
+  connections: 10
+  # Set this timeout to your MySQL server config
+  # * SHOW VARIABLES LIKE 'wait_timeout';
+  # * SET GLOBAL connect_timeout=28800;
+  # Those are the SQL command to be executed globally if you want set the time to 28800 "recommended".
+  timeout: 28800
+  # Change the timezone of the connection if you have error with this.
+  extra: 'serverTimezone=GMT-4'
+
+# We suggest change this value and sync this same data on your DBA spigot config for proper work of the plugin!
+# Put random values here, this values shouldn't be shared like a private password!!!
+# Only allowed lowercase letters! (a-z)
+PluginChannel:
+  verify: 'cxzscelefp'
+  premium: 'usxqtqikyw'
+  cracked: 'agvcarahxe'
+
+
+# 1 = Normal Mode (Premium Accounts are Protected and Cracked User can't use premium names)
+# 2 = Mixed Mode (Premium Accounts are required to register, but they can use the /premium command to get auto-logged in and protected just like in Normal Mode)
+# 3 = Secure Mode (All accounts are required to use the register/login commands)
+WorkMethod:
+  Value: 1
+
+# Kick the player if he uses the wrong password for the account
+Login:
+  WrongKick: true
+
+# Timer Setup
+# CleanRequest = Time to clean cache of the plugin; This is RECOMMENDED to be 30 (MINUTES)
+# RegisterMax = Max amount of time the player has to register the account (SECONDS)
+# LoginMax = Max amount of time the player to log into the account (SECONDS)
+Timers:
+  # Time in MINUTES
+  CleanRequest: 30
+  # Time in SECONDS
+  RegisterMax: 30
+  # Time in SECONDS
+  LoginMax: 30
+
+# Customize the options :D
+Options:
+  NameRegex: '^[a-zA-Z0-9_]*'
+  # This is the "message you get" every x seconds when you join and you need to register or login
+  SpamMessages:
+    Enabled: true
+    Seconds: 10
+    SendTitles: true
+    SendMessages: true
+  # Protect Registered Cracked Accounts (only for mode = 1)
+  ProtectRegisteredCrackedAccounts: false
+  # OldVersion is to fix the error generated on SwitchListener when a player connect if you are running Bungee for 1.7 please enable this.
+  OldVersion: false
+  # Password Length Requirements
+  MinPasswordLength: 3
+  MaxPasswordLength: 12
+  # Supported Encryption Hashers = SHA256, SHA512, SMD5, OLDDEFAULT (DEFAULT DBA V9.X), SHA512C (SHA512 DBA V9.X), SHA256SN (SHA256 WITHOUT SALT NOT RECOMMENDED).
+  # AUTHME HASH SUPPORTED (AUTHME-SHA256)
+  PasswordHash: 'SHA512'
+  # Enable Captcha when registering, EXAMPLE: /register pass pass captchacode
+  Captcha: true
+  CaptchaLength: 6
+  # Use offline UUID (I'M NOT RESPONSIBLE ABOUT PLAYER LOOSING ITEMS OR RANK WITH THIS FEATURE.)
+  # Reworked 24-04-2020
+  OfflineUUID: false
+  # Anti-Bot Feature (Only Block Connections if the server has X join on Y time)
+  MaxLogin:
+    Enabled: false
+    # Modes
+    # 1 = Normal (After the time set has passed the player will be allowed to join again)
+    # 2 = ShieldMode(After the time set for ShieldDuration has passed the player will be able to join again)
+    # How does ShieldMode work? A: After a player joins a certain amount of times(Max) within a set amount of time(Seconds), MaxLogin will trigger and cause the server to be put into the shield mode,
+    # If this continuously happens more time will be added on to the protection. When the MaxLogin count resets the Shield will continue blocking joins until his time reset.
+    # // SHIELD DURATION IS IN SECONDS.
+    # Current setup is 30 joins in 10 seconds.
+    Mode: 1
+    Max: 30
+    Seconds: 10
+    ShieldDuration: 35
+  # Enable or disable the titles of the plugin
+  # true = enabled // false = disabled
+  Titles:
+    Auto: true
+    Login: true
+    Register: true
+    Successful: true
+  Sessions:
+    MaxTimeToApply: 300
+  NameCheck: true
+  # IP Limits
+  IPChecker:
+    DisableIPRegisterLimit: true
+    DisableIPPlayingLimit: true
+    MaxAccountsDefault: 2
+    MaxPlayingDefault: 2
+  # True = Enable support to Multiple Proxy's running on "RedisBungee"
+  RedisBungeeMode: false
+  # Enable auto-centered messages
+  UseCenteredMessages: true
+  # This enable delayed titles and messages the time is on seconds.
+  EnableDelay: false
+  DelaySeconds: 1
+  # This option will connect the user from his last connected server when he's finally verified.
+  ConnectUserLastServer: false
+  # Enable /lobby /hub command (This will use the server's configured on this file "Servers Section")
+  LobbyCommands: true
+  # This will add the alias "spawn" to the /lobby /hub commands ("This was a personal request from a user")
+  LobbyCommandsSpawn: false
+  # Floodgate options
+  Floodgate:
+    # true = Bedrock players will get auto registered, false = bedrock players need to register/login.
+    # Note: For security reasons it will be recommended to be on false (Account stealing, etc).
+    AutoRegister: false
+
+# Handlers = Enable Server Administration = If this is false The plugin will use default server configured on Bungee.
+# If balancer is disabled (false) It will use the Single server "AuthS or LobbyS"
+# If balancer has been enabled (true) It will use the Multi Server "AuthM or LobbyM"
+Servers:
+  Lobby:
+    - 'Lobby01'
+    - 'Lobby02'
+  Auth:
+    - 'Auth01'
+    - 'Auth02'
+  # Error Lobby/Auth will be used if one of the server of the list is NULL when we are trying to get the ServerInfo.
+  LobbyError: 'Lobby01'
+  AuthError: 'Auth01'
+
+# Enable Commands in case you need it.
+Commands:
+  PremiumCMD: false
+  # PremiumMode 1 = You can use the command without login and register // 2 = You need to login or registered to use the command
+  PremiumMode: 2
+  # This command isn't done at all
+  CrackedCMD: false
+
+# If you have some issues with an api or if it is down disable it here.
+# BauxiteAPI is under development please don't use it.
+# Fallback 1 = API Mojang
+# Fallback 2 = API Cloudprotected
+# Fallback 3 = API MineTools
+# Fallback 4 = API BauxiteAPI "STILL UNDER IDEAS DON'T USE IT.".
+APIS:
+  Enable:
+    Mojang:
+      Enable: true
+      Fallback: 2
+    CloudProtected:
+      Enable: true
+      Fallback: 1
+    MineTools:
+      Enable: true
+      Fallback: 5
+    BauxiteAPI:
+      Enable: false
+      Fallback: 1
+
+# SMTP Configuration
+SMTP:
+  host: 'localhost'
+  port: '25'
+  user: 'root'
+  pass: 'password'
+  from: 'account@dynamicbungeeauth.net'
+  file: 'Index.html'
+  subj: 'DynamicBungeeAuth'
+
+# Database Importers
+# Currently supported: AUTHME HASH: SHA256
+Importers:
+  Enabled: false
+  SSL: false
+  SQL:
+    ip: 'localhost'
+    port: '3306'
+    database: 'authmedatabase'
+    user: 'authmeuser'
+    password: 'authmepassword'
+    table: 'yourtableofauthme'
+    structure:
+      name: 'realname'
+      password: 'password'
+      ip: 'ip'
+      regip: 'regip'
+
+# Debug message of APIS
+Debug:
+  apis: true
