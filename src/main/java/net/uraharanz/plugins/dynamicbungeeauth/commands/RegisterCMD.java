@@ -3,8 +3,8 @@ package net.uraharanz.plugins.dynamicbungeeauth.commands;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
@@ -18,12 +18,12 @@ import java.util.concurrent.TimeUnit;
  * @author an5w1r@163.com
  */
 public class RegisterCMD extends Command {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final int minPasswordLength;
     private final int maxPasswordLength;
     private final boolean captchaEnabled;
 
-    public RegisterCMD(main plugin) {
+    public RegisterCMD(DBAPlugin plugin) {
         super("register", null, "reg");
         this.plugin = plugin;
         this.maxPasswordLength = plugin.getConfigLoader().getIntegerCFG("Options.MaxPasswordLength");

@@ -5,19 +5,20 @@
 
 package net.uraharanz.plugins.dynamicbungeeauth.cache.spam;
 
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.Title;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
+import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.Title;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
-import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 
 public class SpamPlayerList {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final ConcurrentHashMap<String, SpamPlayer> player;
     private final int seconds;
     private final boolean enabled;
@@ -37,7 +38,7 @@ public class SpamPlayerList {
     private final int titleLoginFadeOut;
     private final List<String> messageLogins;
 
-    public SpamPlayerList(main var1) {
+    public SpamPlayerList(DBAPlugin var1) {
         this.plugin = var1;
         this.enabled = var1.getConfigLoader().getBooleanCFG("Options.SpamMessages.Enabled");
         this.seconds = var1.getConfigLoader().getIntegerCFG("Options.SpamMessages.Seconds");
@@ -93,7 +94,7 @@ public class SpamPlayerList {
                                 Title title = ProxyServer.getInstance().createTitle();
                                 title.title(MessageHandler.sendMSG(this.titleRegisterTop));
                                 if (this.captchaEnabled) {
-                                    PlayerCache playerCache = main.plugin.getPlayerCacheList().searchCache(player.getName());
+                                    PlayerCache playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(player.getName());
                                     title.subTitle(MessageHandler.sendMSG(this.titleRegisterBottom.replaceAll("%captcha%", playerCache.getCaptcha())));
                                 } else {
                                     title.subTitle(MessageHandler.sendMSG(this.titleRegisterBottom));
@@ -109,13 +110,13 @@ public class SpamPlayerList {
                                 for(String message : this.messageRegisters) {
                                     if (this.messageRegisters.indexOf(message) != 0 && this.messageRegisters.indexOf(message) != this.messageRegisters.size() - 1) {
                                         if (this.captchaEnabled) {
-                                            PlayerCache playerCache = main.plugin.getPlayerCacheList().searchCache(spamPlayer.getName());
+                                            PlayerCache playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(spamPlayer.getName());
                                             MessageHandler.sendCenteredMessage(player, message.replaceAll("&", "§").replaceAll("%captcha%", playerCache.getCaptcha()));
                                         } else {
                                             MessageHandler.sendCenteredMessage(player, message.replaceAll("&", "§"));
                                         }
                                     } else if (this.captchaEnabled) {
-                                        PlayerCache playerCache = main.plugin.getPlayerCacheList().searchCache(spamPlayer.getName());
+                                        PlayerCache playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(spamPlayer.getName());
                                         player.sendMessage(MessageHandler.sendMSG(message.replaceAll("%captcha%", playerCache.getCaptcha())));
                                     } else {
                                         player.sendMessage(MessageHandler.sendMSG(message));

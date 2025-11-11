@@ -1,6 +1,10 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.importers;
 
 import com.google.common.base.Charsets;
+import net.md_5.bungee.api.ProxyServer;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -11,20 +15,17 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.UUID;
-import net.md_5.bungee.api.ProxyServer;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
 public class AuthmeImporter {
     public static void importDB() {
-        if (main.plugin.getConfigLoader().getBooleanCFG("Importers.Enabled")) {
-            main.plugin.getProxy().getScheduler().runAsync(main.plugin, () -> SQLImp.execute(connection -> {
+        if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Importers.Enabled")) {
+            DBAPlugin.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> SQLImp.execute(connection -> {
                 Statement statement = connection.createStatement();
-                String string = main.plugin.getConfigLoader().getStringCFG("Importers.SQL.table");
-                String string2 = main.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.name");
-                String string3 = main.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.password");
-                String string4 = main.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.ip");
-                String string5 = main.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.regip");
+                String string = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.table");
+                String string2 = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.name");
+                String string3 = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.password");
+                String string4 = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.ip");
+                String string5 = DBAPlugin.plugin.getConfigLoader().getStringCFG("Importers.SQL.structure.regip");
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM " + string + ";");
                 while (resultSet.next()) {
                     SQL.PlayerIMPORTER(resultSet.getString(string2), UUID.nameUUIDFromBytes(("OfflinePlayer:" + resultSet.getString(string2)).getBytes(Charsets.UTF_8)).toString(), resultSet.getString(string3), resultSet.getString(string4), resultSet.getString(string5), 0, 0);

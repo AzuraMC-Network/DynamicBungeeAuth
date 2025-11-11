@@ -3,17 +3,17 @@ package net.uraharanz.plugins.dynamicbungeeauth.commands;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
 public class LogoutCMD
 extends Command {
-    private main plugin;
+    private DBAPlugin plugin;
 
-    public LogoutCMD(main main2) {
+    public LogoutCMD(DBAPlugin plugin) {
         super("logout");
-        this.plugin = main2;
+        this.plugin = plugin;
     }
 
     public void execute(CommandSender commandSender, String[] stringArray) {

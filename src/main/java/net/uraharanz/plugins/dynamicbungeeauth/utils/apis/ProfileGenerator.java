@@ -1,29 +1,29 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.apis;
 
-import java.util.UUID;
-
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.apis.PlayerAPI;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 
+import java.util.UUID;
+
 public class ProfileGenerator {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final boolean MojangE;
     private final boolean CloudProtectedE;
     private final boolean MineToolsE;
     private final boolean BauxiteE;
     private static int number;
 
-    public ProfileGenerator(main main2) {
-        this.plugin = main2;
-        this.MojangE = main2.getConfigLoader().getBooleanCFG("APIS.Enable.Mojang.Enable");
-        this.CloudProtectedE = main2.getConfigLoader().getBooleanCFG("APIS.Enable.CloudProtected.Enable");
-        this.MineToolsE = main2.getConfigLoader().getBooleanCFG("APIS.Enable.MineTools.Enable");
-        this.BauxiteE = main2.getConfigLoader().getBooleanCFG("APIS.Enable.BauxiteAPI.Enable");
+    public ProfileGenerator(DBAPlugin plugin) {
+        this.plugin = plugin;
+        this.MojangE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.Mojang.Enable");
+        this.CloudProtectedE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.CloudProtected.Enable");
+        this.MineToolsE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.MineTools.Enable");
+        this.BauxiteE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.BauxiteAPI.Enable");
     }
 
     public void Generator(final String string, final CallbackAPI<UUID> callbackAPI) {
-        this.plugin.getProxy().getScheduler().runAsync(main.plugin, () -> {
+        this.plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             block11: {
                 try {
                     PlayerAPI playerAPI = this.plugin.getPlayerAPIList().searchRequest(string);
@@ -48,7 +48,7 @@ public class ProfileGenerator {
                                         ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                         callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                     } else {
-                                        ProfileGenerator.this.fallbackAPI(string, main.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.Mojang.Fallback"), new CallbackAPI<String>(){
+                                        ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.Mojang.Fallback"), new CallbackAPI<String>() {
 
                                             @Override
                                             public void done(String string) {
@@ -89,7 +89,7 @@ public class ProfileGenerator {
                                         ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                         callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                     } else {
-                                        ProfileGenerator.this.fallbackAPI(string, main.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.CloudProtected.Fallback"), new CallbackAPI<String>(){
+                                        ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.CloudProtected.Fallback"), new CallbackAPI<String>() {
 
                                             @Override
                                             public void done(String string) {
@@ -130,7 +130,7 @@ public class ProfileGenerator {
                                         ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                         callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                     } else {
-                                        ProfileGenerator.this.fallbackAPI(string, main.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.MineTools.Fallback"), new CallbackAPI<String>(){
+                                        ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.MineTools.Fallback"), new CallbackAPI<String>() {
 
                                             @Override
                                             public void done(String string) {
@@ -171,7 +171,7 @@ public class ProfileGenerator {
                                             ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
                                             callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
                                         } else {
-                                            ProfileGenerator.this.fallbackAPI(string, main.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.BauxiteAPI.Fallback"), new CallbackAPI<String>(){
+                                            ProfileGenerator.this.fallbackAPI(string, DBAPlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.BauxiteAPI.Fallback"), new CallbackAPI<String>() {
 
                                                 @Override
                                                 public void done(String string) {

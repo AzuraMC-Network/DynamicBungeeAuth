@@ -28,9 +28,9 @@ import java.util.HashMap;
 
 @Getter
 @Setter
-public class main
+public class DBAPlugin
 extends Plugin {
-    public static main plugin;
+    public static DBAPlugin plugin;
     private Files files;
     private LoadListeners listeners;
     private PlayerAPIList playerAPIList;

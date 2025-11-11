@@ -3,8 +3,8 @@ package net.uraharanz.plugins.dynamicbungeeauth.commands;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
@@ -16,10 +16,10 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.password.HashMethods;
  * @author an5w1r@163.com
  */
 public class LoginCMD extends Command {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final boolean kickOnWrongPassword;
 
-    public LoginCMD(main plugin) {
+    public LoginCMD(DBAPlugin plugin) {
         super("login", null, "log", "l");
         this.plugin = plugin;
         this.kickOnWrongPassword = plugin.getConfigLoader().getBooleanCFG("Login.WrongKick");

@@ -1,25 +1,26 @@
 package net.uraharanz.plugins.dynamicbungeeauth.listeners;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 import org.geysermc.floodgate.api.FloodgateApi;
 
+import java.lang.reflect.Field;
+import java.util.UUID;
+
 public class Login
 implements Listener {
-    private main plugin;
+    private DBAPlugin plugin;
     private boolean offlineUUID;
     private FloodgateApi floodgateApi;
 
-    public Login(main main2) {
-        this.plugin = main2;
-        this.offlineUUID = main2.getConfigLoader().getBooleanCFG("Options.OfflineUUID");
+    public Login(DBAPlugin plugin) {
+        this.plugin = plugin;
+        this.offlineUUID = plugin.getConfigLoader().getBooleanCFG("Options.OfflineUUID");
     }
 
     @EventHandler(priority=-64)

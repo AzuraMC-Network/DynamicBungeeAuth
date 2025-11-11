@@ -4,19 +4,19 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.fix.Fix;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
 
 public class SwitchListener
 implements Listener {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final boolean OldVersions;
 
-    public SwitchListener(main main2) {
-        this.plugin = main2;
-        this.OldVersions = main2.getConfigLoader().getBooleanCFG("Options.OldVersion");
+    public SwitchListener(DBAPlugin plugin) {
+        this.plugin = plugin;
+        this.OldVersions = plugin.getConfigLoader().getBooleanCFG("Options.OldVersion");
     }
 
     @EventHandler(priority=64)

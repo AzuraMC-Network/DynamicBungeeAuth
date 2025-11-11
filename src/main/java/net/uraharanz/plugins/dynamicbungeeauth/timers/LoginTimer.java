@@ -1,27 +1,26 @@
 package net.uraharanz.plugins.dynamicbungeeauth.timers;
 
-import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
-
 import lombok.Getter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
+
 public class LoginTimer {
-    private final main plugin;
+    private final DBAPlugin plugin;
     @Getter
     private final HashMap<String, ScheduledTask> timers;
     private final int time;
 
-    public LoginTimer(main main2) {
-        this.plugin = main2;
+    public LoginTimer(DBAPlugin plugin) {
+        this.plugin = plugin;
         this.timers = new HashMap<>();
-        this.time = main2.getConfigLoader().getIntegerCFG("Timers.LoginMax");
+        this.time = plugin.getConfigLoader().getIntegerCFG("Timers.LoginMax");
     }
 
     public void logTimer(final ProxiedPlayer proxiedPlayer) {

@@ -1,16 +1,17 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.smtp;
 
-import java.io.*;
-import java.util.Properties;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import org.apache.commons.io.IOUtils;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
-import org.apache.commons.io.IOUtils;
+import java.io.*;
+import java.util.Properties;
 
 public class EmailSystem {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final String host;
     private final String port;
     private final String user;
@@ -19,15 +20,15 @@ public class EmailSystem {
     private final String file;
     private final String subj;
 
-    public EmailSystem(main main2) {
-        this.plugin = main2;
-        this.host = main2.getConfigLoader().getStringCFG("SMTP.host");
-        this.port = main2.getConfigLoader().getStringCFG("SMTP.port");
-        this.user = main2.getConfigLoader().getStringCFG("SMTP.user");
-        this.pass = main2.getConfigLoader().getStringCFG("SMTP.pass");
-        this.from = main2.getConfigLoader().getStringCFG("SMTP.from");
-        this.file = main2.getConfigLoader().getStringCFG("SMTP.file");
-        this.subj = main2.getConfigLoader().getStringCFG("SMTP.subj");
+    public EmailSystem(DBAPlugin plugin) {
+        this.plugin = plugin;
+        this.host = plugin.getConfigLoader().getStringCFG("SMTP.host");
+        this.port = plugin.getConfigLoader().getStringCFG("SMTP.port");
+        this.user = plugin.getConfigLoader().getStringCFG("SMTP.user");
+        this.pass = plugin.getConfigLoader().getStringCFG("SMTP.pass");
+        this.from = plugin.getConfigLoader().getStringCFG("SMTP.from");
+        this.file = plugin.getConfigLoader().getStringCFG("SMTP.file");
+        this.subj = plugin.getConfigLoader().getStringCFG("SMTP.subj");
     }
 
     /*

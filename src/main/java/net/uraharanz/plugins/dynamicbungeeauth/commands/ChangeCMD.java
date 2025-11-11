@@ -3,7 +3,7 @@ package net.uraharanz.plugins.dynamicbungeeauth.commands;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
@@ -13,11 +13,11 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.password.HashMethods;
  * @author an5w1r@163.com
  */
 public class ChangeCMD extends Command {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final int minPasswordLength;
     private final int maxPasswordLength;
 
-    public ChangeCMD(main plugin) {
+    public ChangeCMD(DBAPlugin plugin) {
         super("changepassword", "auth.changepassword", "cpw");
         this.plugin = plugin;
         this.maxPasswordLength = plugin.getConfigLoader().getIntegerCFG("Options.MaxPasswordLength");

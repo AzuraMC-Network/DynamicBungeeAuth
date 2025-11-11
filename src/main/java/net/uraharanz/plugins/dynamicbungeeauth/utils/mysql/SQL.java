@@ -1,5 +1,12 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.mysql;
 
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
+import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
+import net.uraharanz.plugins.dynamicbungeeauth.utils.random.SaltGenerator;
+
 import java.nio.charset.StandardCharsets;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,12 +15,6 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.random.SaltGenerator;
 
 public class SQL {
     public static UUID generateOfflineUUID(String string) {
@@ -22,7 +23,7 @@ public class SQL {
     }
 
     public static void PlayerSQL(ProxiedPlayer proxiedPlayer, int n, int n2, boolean bl, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             String string = proxiedPlayer.getName();
             String string2 = bl ? SQL.generateOfflineUUID(string).toString() : proxiedPlayer.getUniqueId().toString();
             String string3 = proxiedPlayer.getAddress().getAddress().getHostAddress();
@@ -61,7 +62,7 @@ public class SQL {
     }
 
     public static void deletePlayerData(String string) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string2 = "DELETE FROM playerdata WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string2);
             preparedStatement.setString(1, string);
@@ -71,7 +72,7 @@ public class SQL {
     }
 
     public static void PlayerIMPORTER(String string, String string2, String string3, String string4, String string5, int n, int n2) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM playerdata WHERE uuid = '" + string2 + "';");
             if (!resultSet.next()) {
@@ -91,7 +92,7 @@ public class SQL {
     }
 
     public static void getPlayer(ProxiedPlayer proxiedPlayer, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             String string = proxiedPlayer.getUniqueId().toString();
             PoolManager.execute(connection -> {
                 String string2 = "SELECT * FROM playerdata WHERE uuid = ?";
@@ -108,31 +109,31 @@ public class SQL {
                         preparedStatement.execute();
                         preparedStatement.close();
                     }
-                    if (main.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName()) == null) {
+                    if (DBAPlugin.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName()) == null) {
                         object = new PlayerData(resultSet.getString("uuid"), resultSet.getString("name"), resultSet.getString("email"), resultSet.getString("reg_ip"), resultSet.getString("log_ip"), resultSet.getString("password"), resultSet.getString("salt"), resultSet.getDate("firstjoin"), resultSet.getDate("lastjoin"), resultSet.getBoolean("premium"), resultSet.getBoolean("valid"), resultSet.getString("server"), resultSet.getBoolean("lwlogged"), true);
-                        main.plugin.getPlayerDataList().addPlayer((PlayerData)object);
+                        DBAPlugin.plugin.getPlayerDataList().addPlayer((PlayerData) object);
                         callbackSQL.done(true);
                         resultSet.close();
                         preparedStatement.close();
                         connection.close();
                     } else {
                         object = new PlayerData(resultSet.getString("uuid"), resultSet.getString("name"), resultSet.getString("email"), resultSet.getString("reg_ip"), resultSet.getString("log_ip"), resultSet.getString("password"), resultSet.getString("salt"), resultSet.getDate("firstjoin"), resultSet.getDate("lastjoin"), resultSet.getBoolean("premium"), resultSet.getBoolean("valid"), resultSet.getString("server"), resultSet.getBoolean("lwlogged"), true);
-                        main.plugin.getPlayerDataList().modifyPlayer((PlayerData)object);
+                        DBAPlugin.plugin.getPlayerDataList().modifyPlayer((PlayerData) object);
                         callbackSQL.done(true);
                         resultSet.close();
                         preparedStatement.close();
                         connection.close();
                     }
-                } else if (main.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName()) == null) {
+                } else if (DBAPlugin.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName()) == null) {
                     PlayerData playerData = new PlayerData(proxiedPlayer.getUniqueId().toString(), proxiedPlayer.getName(), "null", "null", "null", "null", "null", null, null, false, false, "null", false, false);
-                    main.plugin.getPlayerDataList().addPlayer(playerData);
+                    DBAPlugin.plugin.getPlayerDataList().addPlayer(playerData);
                     callbackSQL.done(true);
                     resultSet.close();
                     preparedStatement.close();
                     connection.close();
                 } else {
                     PlayerData playerData = new PlayerData(proxiedPlayer.getUniqueId().toString(), proxiedPlayer.getName(), "null", "null", "null", "null", "null", null, null, false, false, "null", false, false);
-                    main.plugin.getPlayerDataList().modifyPlayer(playerData);
+                    DBAPlugin.plugin.getPlayerDataList().modifyPlayer(playerData);
                     callbackSQL.done(true);
                     resultSet.close();
                     preparedStatement.close();
@@ -147,7 +148,7 @@ public class SQL {
     }
 
     public static void isPlayerDB(ProxiedPlayer proxiedPlayer, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             if (proxiedPlayer != null) {
                 String string = proxiedPlayer.getUniqueId().toString();
                 PoolManager.execute(connection -> {
@@ -177,7 +178,7 @@ public class SQL {
 
     public static void isPlayerDB(String string, CallbackSQL<Boolean> callbackSQL) {
         long l = System.currentTimeMillis();
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             if (string != null) {
                 PoolManager.execute(connection -> {
                     String string2 = "SELECT * FROM playerdata WHERE name = ?";
@@ -210,7 +211,7 @@ public class SQL {
     }
 
     public static void setPlayerData(ProxiedPlayer proxiedPlayer, String string, String string2) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             String string3 = proxiedPlayer.getUniqueId().toString();
             PoolManager.execute(connection -> {
                 String string4 = "UPDATE playerdata SET `" + string + "` = ? WHERE uuid = ?";
@@ -226,7 +227,7 @@ public class SQL {
     }
 
     public static void setPlayerDataS(String string, String string2, String string3) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string4 = "UPDATE playerdata SET `" + string2 + "` = ? WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string4);
             preparedStatement.setString(1, string3);
@@ -239,7 +240,7 @@ public class SQL {
     }
 
     public static void setPlayerDataAsync(ProxiedPlayer proxiedPlayer, String string, String string2, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             String string3 = proxiedPlayer.getUniqueId().toString();
             PoolManager.execute(connection -> {
                 String string4 = "UPDATE playerdata SET `" + string + "` = ? WHERE uuid = ?";
@@ -256,7 +257,7 @@ public class SQL {
     }
 
     public static void getPlayerDataS(ProxiedPlayer proxiedPlayer, String string, CallbackSQL<String> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             String string2 = proxiedPlayer.getUniqueId().toString();
             PoolManager.execute(connection -> {
                 String string3 = "SELECT `" + string + "` AS result FROM playerdata WHERE uuid = ?";
@@ -280,7 +281,7 @@ public class SQL {
     }
 
     public static void getPlayerDataString(String string, String string2, CallbackSQL<String> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string3 = "SELECT `" + string2 + "` AS result FROM playerdata WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string3);
             preparedStatement.setString(1, string);
@@ -304,7 +305,7 @@ public class SQL {
     }
 
     public static void getPlayerDataS(String string, String string2, CallbackSQL<String> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string3 = "SELECT `" + string2 + "` AS result FROM playerdata WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string3);
             preparedStatement.setString(1, string);
@@ -328,7 +329,7 @@ public class SQL {
     }
 
     public static void getPlayerDataAPI(String string, String string2, CallbackSQL<String> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string3 = "SELECT `" + string2 + "` AS result FROM playerdata WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string3);
             preparedStatement.setString(1, string);
@@ -349,7 +350,7 @@ public class SQL {
     }
 
     public static void RemovePlayerDB(ProxiedPlayer proxiedPlayer, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string = "DELETE FROM playerdata WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string);
             preparedStatement.setString(1, proxiedPlayer.getName());
@@ -362,7 +363,7 @@ public class SQL {
     }
 
     public static void RemovePlayerDBS(String string, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string2 = "DELETE FROM playerdata WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string2);
             preparedStatement.setString(1, string);
@@ -375,7 +376,7 @@ public class SQL {
     }
 
     public static void addName(String string) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string2 = "INSERT INTO playernames (`name`) VALUES (?)";
             PreparedStatement preparedStatement = connection.prepareStatement(string2);
             preparedStatement.setString(1, string);
@@ -387,7 +388,7 @@ public class SQL {
     }
 
     public static void removeName(String string) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string2 = "DELETE FROM playernames WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string2);
             preparedStatement.setString(1, string);
@@ -398,7 +399,7 @@ public class SQL {
     }
 
     public static void isName(String string, CallbackSQL<Boolean> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string2 = "SELECT * FROM playernames WHERE name = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string2);
             preparedStatement.setString(1, string);
@@ -422,7 +423,7 @@ public class SQL {
     }
 
     public static void getIPTable(String string, String string2, CallbackSQL<String> callbackSQL) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             String string3 = "SELECT `" + string2 + "` AS result FROM playerip WHERE ip = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(string3);
             preparedStatement.setString(1, string);
@@ -446,7 +447,7 @@ public class SQL {
     }
 
     public static void mathIPTable(final String string, String string2, final String string3, final int n) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             if (string2.equals("+")) {
                 SQL.getIPTable(string, string3, new CallbackSQL<String>(){
 
@@ -492,7 +493,7 @@ public class SQL {
     }
 
     public static void mathIPTable(final ProxiedPlayer proxiedPlayer, final String string, final String string2, final int n) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> {
             final String string3 = proxiedPlayer.getAddress().getAddress().getHostAddress();
             if (string.equals("+")) {
                 SQL.getIPTable(string3, string2, new CallbackSQL<String>(){
@@ -539,12 +540,12 @@ public class SQL {
     }
 
     public static void registerIP(ProxiedPlayer proxiedPlayer, int n) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             Statement statement = connection.createStatement();
             String string = proxiedPlayer.getAddress().getAddress().getHostAddress();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM playerip WHERE ip = '" + string + "';");
             if (!resultSet.next()) {
-                statement.executeUpdate("INSERT INTO playerip (`ip`, `accounts`, `playing`, `max_accounts`, `max_playing`) VALUES ('" + string + "', '1', '" + n + "', '" + main.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxAccountsDefault") + "', '" + main.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxPlayingDefault") + "');");
+                statement.executeUpdate("INSERT INTO playerip (`ip`, `accounts`, `playing`, `max_accounts`, `max_playing`) VALUES ('" + string + "', '1', '" + n + "', '" + DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxAccountsDefault") + "', '" + DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.IPChecker.MaxPlayingDefault") + "');");
                 resultSet.close();
                 statement.close();
                 connection.close();
@@ -562,7 +563,7 @@ public class SQL {
     }
 
     public static void deleteIP(String string) {
-        ProxyServer.getInstance().getScheduler().runAsync(main.plugin, () -> PoolManager.execute(connection -> {
+        ProxyServer.getInstance().getScheduler().runAsync(DBAPlugin.plugin, () -> PoolManager.execute(connection -> {
             Statement statement = connection.createStatement();
             statement.execute("DELETE FROM `playerip` WHERE `playerip`.`ip` = '" + string + "' ");
             statement.close();

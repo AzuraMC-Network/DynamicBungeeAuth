@@ -4,10 +4,10 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.spam.SpamPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackMET;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
@@ -24,16 +24,16 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayersMethods {
     public static void CleanTitles(ProxiedPlayer proxiedPlayer) {
-        if (main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Successful")) {
+        if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Successful")) {
             Title title = ProxyServer.getInstance().createTitle();
             title.reset();
             title.clear();
             title.send(proxiedPlayer);
-            title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.successful.top")));
-            title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.successful.bottom")));
-            title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.fadein"));
-            title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.stay"));
-            title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.fadeout"));
+            title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.successful.top")));
+            title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.successful.bottom")));
+            title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.fadein"));
+            title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.stay"));
+            title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.fadeout"));
             title.send(proxiedPlayer);
         }
     }
@@ -41,12 +41,12 @@ public class PlayersMethods {
     public static void pMessage(ProxiedPlayer proxiedPlayer, int n) {
         block18: {
             if (proxiedPlayer == null) break block18;
-            boolean bl = main.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
-            int n2 = main.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
+            boolean bl = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
+            int n2 = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
             if (bl) {
-                main.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
+                DBAPlugin.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> {
                     if (n == 1) {
-                        List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.auto");
+                        List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.auto");
                         for (String string : arrayList) {
                             if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
                                 proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
@@ -56,8 +56,8 @@ public class PlayersMethods {
                         }
                     } else if (n == 2) {
                         SpamPlayer spamPlayer = new SpamPlayer(proxiedPlayer.getName(), "LOGIN", false);
-                        main.plugin.getSpamPlayerList().addPlayer(spamPlayer);
-                        List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.login");
+                        DBAPlugin.plugin.getSpamPlayerList().addPlayer(spamPlayer);
+                        List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.login");
                         for (String string : arrayList) {
                             if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
                                 proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
@@ -66,7 +66,7 @@ public class PlayersMethods {
                             MessageHandler.sendCenteredMessage(proxiedPlayer, string.replaceAll("&", "§"));
                         }
                     } else if (n == 10) {
-                        List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.session");
+                        List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.session");
                         for (String string : arrayList) {
                             if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
                                 proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
@@ -76,24 +76,24 @@ public class PlayersMethods {
                         }
                     } else {
                         SpamPlayer spamPlayer = new SpamPlayer(proxiedPlayer.getName(), "REGISTER", false);
-                        main.plugin.getSpamPlayerList().addPlayer(spamPlayer);
-                        List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.register");
+                        DBAPlugin.plugin.getSpamPlayerList().addPlayer(spamPlayer);
+                        List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.register");
                         for (String string : arrayList) {
                             PlayerCache playerCache;
                             boolean bl2;
                             if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
-                                bl2 = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+                                bl2 = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
                                 if (bl2) {
-                                    playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
+                                    playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
                                     proxiedPlayer.sendMessage(MessageHandler.sendMSG(string.replaceAll("%captcha%", playerCache.getCaptcha())));
                                     continue;
                                 }
                                 proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
                                 continue;
                             }
-                            bl2 = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+                            bl2 = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
                             if (bl2) {
-                                playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
+                                playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
                                 MessageHandler.sendCenteredMessage(proxiedPlayer, string.replaceAll("&", "§").replaceAll("%captcha%", playerCache.getCaptcha()));
                                 continue;
                             }
@@ -102,7 +102,7 @@ public class PlayersMethods {
                     }
                 }, n2, TimeUnit.SECONDS);
             } else if (n == 1) {
-                List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.auto");
+                List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.auto");
                 for (String string : arrayList) {
                     if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
                         proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
@@ -112,8 +112,8 @@ public class PlayersMethods {
                 }
             } else if (n == 2) {
                 SpamPlayer spamPlayer = new SpamPlayer(proxiedPlayer.getName(), "LOGIN", false);
-                main.plugin.getSpamPlayerList().addPlayer(spamPlayer);
-                List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.login");
+                DBAPlugin.plugin.getSpamPlayerList().addPlayer(spamPlayer);
+                List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.login");
                 for (String string : arrayList) {
                     if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
                         proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
@@ -122,7 +122,7 @@ public class PlayersMethods {
                     MessageHandler.sendCenteredMessage(proxiedPlayer, string.replaceAll("&", "§"));
                 }
             } else if (n == 10) {
-                List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.session");
+                List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.session");
                 for (String string : arrayList) {
                     if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
                         proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
@@ -132,24 +132,24 @@ public class PlayersMethods {
                 }
             } else {
                 SpamPlayer spamPlayer = new SpamPlayer(proxiedPlayer.getName(), "REGISTER", false);
-                main.plugin.getSpamPlayerList().addPlayer(spamPlayer);
-                List<String> arrayList = main.plugin.getConfigLoader().getStringListMSG("AutoMessages.register");
+                DBAPlugin.plugin.getSpamPlayerList().addPlayer(spamPlayer);
+                List<String> arrayList = DBAPlugin.plugin.getConfigLoader().getStringListMSG("AutoMessages.register");
                 for (String string : arrayList) {
                     PlayerCache playerCache;
                     boolean bl2;
                     if (arrayList.indexOf(string) == 0 || arrayList.indexOf(string) == arrayList.size() - 1) {
-                        bl2 = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+                        bl2 = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
                         if (bl2) {
-                            playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
+                            playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
                             proxiedPlayer.sendMessage(MessageHandler.sendMSG(string.replaceAll("%captcha%", playerCache.getCaptcha())));
                             continue;
                         }
                         proxiedPlayer.sendMessage(MessageHandler.sendMSG(string));
                         continue;
                     }
-                    bl2 = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+                    bl2 = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
                     if (bl2) {
-                        playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
+                        playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
                         MessageHandler.sendCenteredMessage(proxiedPlayer, string.replaceAll("&", "§").replaceAll("%captcha%", playerCache.getCaptcha()));
                         continue;
                     }
@@ -160,95 +160,95 @@ public class PlayersMethods {
     }
 
     public static void pTitles(ProxiedPlayer proxiedPlayer, int n) {
-        boolean bl = main.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
-        int n2 = main.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
+        boolean bl = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.EnableDelay");
+        int n2 = DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.DelaySeconds");
         if (bl) {
-            main.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
+            DBAPlugin.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> {
                 Title title = ProxyServer.getInstance().createTitle();
-                if (n == 1 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Auto")) {
-                    title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.auto.top")));
-                    title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.auto.bottom")));
-                    title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadein"));
-                    title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.stay"));
-                    title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadeout"));
+                if (n == 1 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Auto")) {
+                    title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.auto.top")));
+                    title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.auto.bottom")));
+                    title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadein"));
+                    title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.stay"));
+                    title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadeout"));
                     title.send(proxiedPlayer);
                 }
-                if (n == 2 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Login")) {
-                    title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.login.top")));
-                    title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.login.bottom")));
-                    title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadein"));
-                    title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.stay"));
-                    title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadeout"));
+                if (n == 2 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Login")) {
+                    title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.login.top")));
+                    title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.login.bottom")));
+                    title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadein"));
+                    title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.stay"));
+                    title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadeout"));
                     title.send(proxiedPlayer);
                 }
-                if (n == 3 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Register")) {
-                    title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.register.top")));
-                    boolean bl2 = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+                if (n == 3 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Register")) {
+                    title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.top")));
+                    boolean bl2 = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
                     if (bl2) {
-                        PlayerCache playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
-                        title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.register.bottom").replaceAll("%captcha%", playerCache.getCaptcha())));
+                        PlayerCache playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
+                        title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom").replaceAll("%captcha%", playerCache.getCaptcha())));
                     } else {
-                        title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.register.bottom")));
+                        title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom")));
                     }
-                    title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein"));
-                    title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay"));
-                    title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadeout"));
+                    title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein"));
+                    title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay"));
+                    title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadeout"));
                     title.send(proxiedPlayer);
                 }
-                if (n == 10 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Session")) {
-                    title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.session.top")));
-                    title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.session.bottom")));
-                    title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadein"));
-                    title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.stay"));
-                    title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadeout"));
+                if (n == 10 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Session")) {
+                    title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.session.top")));
+                    title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.session.bottom")));
+                    title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadein"));
+                    title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.stay"));
+                    title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadeout"));
                     title.send(proxiedPlayer);
                 }
             }, n2, TimeUnit.SECONDS);
         } else {
             Title title = ProxyServer.getInstance().createTitle();
-            if (n == 1 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Auto")) {
-                title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.auto.top")));
-                title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.auto.bottom")));
-                title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadein"));
-                title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.stay"));
-                title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadeout"));
+            if (n == 1 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Auto")) {
+                title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.auto.top")));
+                title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.auto.bottom")));
+                title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadein"));
+                title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.stay"));
+                title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.auto.options.fadeout"));
                 title.send(proxiedPlayer);
             }
-            if (n == 2 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Login")) {
-                title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.login.top")));
-                title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.login.bottom")));
-                title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadein"));
-                title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.stay"));
-                title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadeout"));
+            if (n == 2 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Login")) {
+                title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.login.top")));
+                title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.login.bottom")));
+                title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadein"));
+                title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.stay"));
+                title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.login.options.fadeout"));
                 title.send(proxiedPlayer);
             }
-            if (n == 3 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Register")) {
-                title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.register.top")));
-                boolean bl2 = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+            if (n == 3 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Register")) {
+                title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.top")));
+                boolean bl2 = DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
                 if (bl2) {
-                    PlayerCache playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
-                    title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.register.bottom").replaceAll("%captcha%", playerCache.getCaptcha())));
+                    PlayerCache playerCache = DBAPlugin.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
+                    title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom").replaceAll("%captcha%", playerCache.getCaptcha())));
                 } else {
-                    title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.register.bottom")));
+                    title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom")));
                 }
-                title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein"));
-                title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay"));
-                title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadout"));
+                title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein"));
+                title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay"));
+                title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadout"));
                 title.send(proxiedPlayer);
             }
-            if (n == 10 && main.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Session")) {
-                title.title(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.session.top")));
-                title.subTitle(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("Titles.session.bottom")));
-                title.fadeIn(main.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadein"));
-                title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.stay"));
-                title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadeout"));
+            if (n == 10 && DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.Titles.Session")) {
+                title.title(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.session.top")));
+                title.subTitle(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("Titles.session.bottom")));
+                title.fadeIn(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadein"));
+                title.stay(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.stay"));
+                title.fadeOut(DBAPlugin.plugin.getConfigLoader().getIntegerMSG("Titles.session.options.fadeout"));
                 title.send(proxiedPlayer);
             }
         }
     }
 
     public static void setValidCache(ProxiedPlayer proxiedPlayer) {
-        PlayerData playerData = main.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName());
+        PlayerData playerData = DBAPlugin.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName());
         if (playerData != null) {
             playerData.setValid(true);
             PlayersMethods.sendVerifyMSG(proxiedPlayer);
@@ -272,7 +272,7 @@ public class PlayersMethods {
     }
 
     public static void setPlayerValidPremium(final ProxiedPlayer proxiedPlayer, final boolean bl) {
-        ProxyServer.getInstance().getScheduler().schedule(main.plugin, () -> SQL.isPlayerDB(proxiedPlayer, new CallbackSQL<Boolean>(){
+        ProxyServer.getInstance().getScheduler().schedule(DBAPlugin.plugin, () -> SQL.isPlayerDB(proxiedPlayer, new CallbackSQL<Boolean>() {
 
             @Override
             public void done(Boolean bl2) {
@@ -315,7 +315,7 @@ public class PlayersMethods {
                                     }
                                 });
                             } else {
-                                proxiedPlayer.disconnect(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("KickMessages.MaxPlayingIP")));
+                                proxiedPlayer.disconnect(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("KickMessages.MaxPlayingIP")));
                             }
                         }
 
@@ -377,7 +377,7 @@ public class PlayersMethods {
                                                 }
                                             });
                                         } else {
-                                            proxiedPlayer.disconnect(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("KickMessages.MaxPlayingIP")));
+                                            proxiedPlayer.disconnect(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("KickMessages.MaxPlayingIP")));
                                         }
                                     }
 
@@ -386,7 +386,7 @@ public class PlayersMethods {
                                     }
                                 });
                             } else {
-                                proxiedPlayer.disconnect(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("KickMessages.MaxAccountsIP")));
+                                proxiedPlayer.disconnect(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("KickMessages.MaxAccountsIP")));
                             }
                         }
 
@@ -404,7 +404,7 @@ public class PlayersMethods {
     }
 
     public static void setPlayerValidSession(final ProxiedPlayer proxiedPlayer) {
-        ProxyServer.getInstance().getScheduler().schedule(main.plugin, () -> SQL.setPlayerDataAsync(proxiedPlayer, "valid", "1", new CallbackSQL<Boolean>(){
+        ProxyServer.getInstance().getScheduler().schedule(DBAPlugin.plugin, () -> SQL.setPlayerDataAsync(proxiedPlayer, "valid", "1", new CallbackSQL<Boolean>() {
 
             @Override
             public void done(Boolean bl) {
@@ -421,7 +421,7 @@ public class PlayersMethods {
                                 SQL.setPlayerData(proxiedPlayer, "lwlogged", "1");
                                 SQL.mathIPTable(proxiedPlayer, "+", "playing", 1);
                                 PlayersMethods.updatePlaying(proxiedPlayer.getName(), true);
-                                main.plugin.getProxy().getScheduler().schedule(main.plugin, () -> PlayersMethods.sendVerifyMSG(proxiedPlayer), 1L, TimeUnit.SECONDS);
+                                DBAPlugin.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> PlayersMethods.sendVerifyMSG(proxiedPlayer), 1L, TimeUnit.SECONDS);
                             }
                         }
 
@@ -439,8 +439,8 @@ public class PlayersMethods {
     }
 
     public static void removePlayerDB(String string, String string2, CallbackAPI<Boolean> callbackAPI) {
-        if (main.plugin.getProxy().getPlayer(string) != null) {
-            ProxiedPlayer proxiedPlayer = main.plugin.getProxy().getPlayer(string);
+        if (DBAPlugin.plugin.getProxy().getPlayer(string) != null) {
+            ProxiedPlayer proxiedPlayer = DBAPlugin.plugin.getProxy().getPlayer(string);
             SQL.RemovePlayerDB(proxiedPlayer, new CallbackSQL<Boolean>(){
 
                 @Override
@@ -451,9 +451,9 @@ public class PlayersMethods {
                 public void error(Exception exception) {
                 }
             });
-            proxiedPlayer.disconnect(MessageHandler.sendMSG(main.plugin.getConfigLoader().getStringMSG("KickMessages.unregisterkick").replaceAll("%admin%", string2)));
+            proxiedPlayer.disconnect(MessageHandler.sendMSG(DBAPlugin.plugin.getConfigLoader().getStringMSG("KickMessages.unregisterkick").replaceAll("%admin%", string2)));
             PlayersMethods.playerRemoveCache(proxiedPlayer);
-            ProxyServer.getInstance().getLogger().info(main.plugin.getConfigLoader().getStringMSG("Commands.unregister.console").replaceAll("%player%", string).replaceAll("%admin%", string2));
+            ProxyServer.getInstance().getLogger().info(DBAPlugin.plugin.getConfigLoader().getStringMSG("Commands.unregister.console").replaceAll("%player%", string).replaceAll("%admin%", string2));
             SQL.mathIPTable(proxiedPlayer, "-", "playing", 1);
             SQL.mathIPTable(proxiedPlayer, "-", "accounts", 1);
             callbackAPI.done(true);
@@ -483,23 +483,23 @@ public class PlayersMethods {
                 }
             });
             PlayersMethods.playerRemoveCache(string);
-            ProxyServer.getInstance().getLogger().info(main.plugin.getConfigLoader().getStringMSG("Commands.unregister.console").replaceAll("%player%", string).replaceAll("%admin%", string2));
+            ProxyServer.getInstance().getLogger().info(DBAPlugin.plugin.getConfigLoader().getStringMSG("Commands.unregister.console").replaceAll("%player%", string).replaceAll("%admin%", string2));
             callbackAPI.done(true);
         }
     }
 
     public static void playerRemoveCache(ProxiedPlayer proxiedPlayer) {
-        main.plugin.getPlayerAPIList().removeRequest(proxiedPlayer.getName());
-        main.plugin.getPlayerCacheList().removeCache(proxiedPlayer.getName());
-        main.plugin.getPlayerDataList().removePlayer(proxiedPlayer.getName());
+        DBAPlugin.plugin.getPlayerAPIList().removeRequest(proxiedPlayer.getName());
+        DBAPlugin.plugin.getPlayerCacheList().removeCache(proxiedPlayer.getName());
+        DBAPlugin.plugin.getPlayerDataList().removePlayer(proxiedPlayer.getName());
         SQL.setPlayerData(proxiedPlayer, "valid", "0");
         SQL.setPlayerData(proxiedPlayer, "lwlogged", "0");
     }
 
     public static void playerRemoveCache(String string) {
-        main.plugin.getPlayerAPIList().removeRequest(string);
-        main.plugin.getPlayerCacheList().removeCache(string);
-        main.plugin.getPlayerDataList().removePlayer(string);
+        DBAPlugin.plugin.getPlayerAPIList().removeRequest(string);
+        DBAPlugin.plugin.getPlayerCacheList().removeCache(string);
+        DBAPlugin.plugin.getPlayerDataList().removePlayer(string);
         SQL.setPlayerDataS(string, "valid", "0");
         SQL.setPlayerDataS(string, "lwlogged", "0");
     }
@@ -528,7 +528,7 @@ public class PlayersMethods {
                                                     Date date = new Date();
                                                     Timestamp timestamp2 = new Timestamp(date.getTime());
                                                     long l = timestamp2.getTime() - timestamp.getTime();
-                                                    if (l / 1000L <= (long) main.plugin.getConfigLoader().getIntegerCFG("Options.Sessions.MaxTimeToApply"))
+                                                    if (l / 1000L <= (long) DBAPlugin.plugin.getConfigLoader().getIntegerCFG("Options.Sessions.MaxTimeToApply"))
                                                         callbackSQL.done(true);
                                                     else {
                                                         callbackSQL.done(false);
@@ -569,7 +569,7 @@ public class PlayersMethods {
     }
 
     public static void verifyNameCheck(final String string, final CallbackMET<Boolean> callbackMET) {
-        if (main.plugin.getConfigLoader().getBooleanCFG("Options.NameCheck")) {
+        if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.NameCheck")) {
             SQL.getPlayerDataS(string, "name", new CallbackSQL<String>(){
 
                 @Override
@@ -595,7 +595,7 @@ public class PlayersMethods {
     }
 
     public static void verifyIPRegister(final ProxiedPlayer proxiedPlayer, final CallbackSQL<Boolean> callbackSQL) {
-        if (!main.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPRegisterLimit")) {
+        if (!DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPRegisterLimit")) {
             final String string = proxiedPlayer.getAddress().getAddress().getHostAddress();
             SQL.getIPTable(string, "max_accounts", new CallbackSQL<String>(){
 
@@ -621,7 +621,7 @@ public class PlayersMethods {
                             }
                         });
                     } else {
-                        main.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
+                        DBAPlugin.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> {
                             SQL.registerIP(proxiedPlayer, 0);
                             callbackSQL.done(true);
                         }, 1L, TimeUnit.SECONDS);
@@ -638,7 +638,7 @@ public class PlayersMethods {
     }
 
     public static void verifyIPPlaying(final ProxiedPlayer proxiedPlayer, final CallbackSQL<Boolean> callbackSQL) {
-        if (!main.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPPlayingLimit")) {
+        if (!DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.IPChecker.DisableIPPlayingLimit")) {
             final String string = proxiedPlayer.getAddress().getAddress().getHostAddress();
             SQL.getIPTable(string, "max_playing", new CallbackSQL<String>(){
 
@@ -663,7 +663,7 @@ public class PlayersMethods {
                             }
                         });
                     } else {
-                        main.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
+                        DBAPlugin.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> {
                             SQL.registerIP(proxiedPlayer, 0);
                             callbackSQL.done(true);
                         }, 1L, TimeUnit.SECONDS);
@@ -680,7 +680,7 @@ public class PlayersMethods {
     }
 
     public static void sendToOtherProxy(String string, String string2, CallbackMET<Boolean> callbackMET) {
-        if (main.plugin.getConfigLoader().getBooleanCFG("Options.RedisBungee")) {
+        if (DBAPlugin.plugin.getConfigLoader().getBooleanCFG("Options.RedisBungee")) {
             String string3 = PlayersMethods.getCurrentProxy(string);
             String string4 = PlayersMethods.getCurrentProxy(string2);
             if (string3 != null && string4 != null) {
@@ -717,15 +717,15 @@ public class PlayersMethods {
     }
 
     public static void updatePlaying(String string, boolean bl) {
-        PlayerData playerData = main.plugin.getPlayerDataList().searchPlayer(string);
+        PlayerData playerData = DBAPlugin.plugin.getPlayerDataList().searchPlayer(string);
         if (playerData != null) {
             playerData.setPlaying(bl);
-            main.plugin.getPlayerDataList().modifyPlayer(playerData);
+            DBAPlugin.plugin.getPlayerDataList().modifyPlayer(playerData);
         }
     }
 
     private static boolean isVerifiedPlayer(ProxiedPlayer proxiedPlayer) {
-        PlayerData playerData = main.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName());
+        PlayerData playerData = DBAPlugin.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName());
         if (playerData != null) {
             return playerData.isValid();
         }
@@ -737,9 +737,9 @@ public class PlayersMethods {
             block8: {
                 block7: {
                     if (!PlayersMethods.isVerifiedPlayer(proxiedPlayer)) break block6;
-                    main.plugin.getProxy();
+                    DBAPlugin.plugin.getProxy();
                     if (ProxyServer.getInstance().getPlayers() == null) break block7;
-                    main.plugin.getProxy();
+                    DBAPlugin.plugin.getProxy();
                     if (!ProxyServer.getInstance().getPlayers().isEmpty()) break block8;
                 }
                 return;
@@ -753,20 +753,20 @@ public class PlayersMethods {
                 exception.printStackTrace();
             }
             if (proxiedPlayer.getServer() != null) {
-                proxiedPlayer.getServer().sendData("dba:" + main.plugin.getConfigLoader().getStringCFG("PluginChannel.verify"), byteArrayOutputStream.toByteArray());
+                proxiedPlayer.getServer().sendData("dba:" + DBAPlugin.plugin.getConfigLoader().getStringCFG("PluginChannel.verify"), byteArrayOutputStream.toByteArray());
                 PlayersMethods.sendDelayedMSG(proxiedPlayer);
             }
         }
     }
 
     public static void sendDelayedMSG(ProxiedPlayer proxiedPlayer) {
-        ProxyServer.getInstance().getScheduler().schedule(main.plugin, () -> {
+        ProxyServer.getInstance().getScheduler().schedule(DBAPlugin.plugin, () -> {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
             try {
                 dataOutputStream.writeUTF("dba:verifyplayer");
                 if (proxiedPlayer != null && proxiedPlayer.getServer() != null) {
-                    proxiedPlayer.getServer().sendData("dba:" + main.plugin.getConfigLoader().getStringCFG("PluginChannel.verify"), byteArrayOutputStream.toByteArray());
+                    proxiedPlayer.getServer().sendData("dba:" + DBAPlugin.plugin.getConfigLoader().getStringCFG("PluginChannel.verify"), byteArrayOutputStream.toByteArray());
                 }
             }
             catch (Exception exception) {

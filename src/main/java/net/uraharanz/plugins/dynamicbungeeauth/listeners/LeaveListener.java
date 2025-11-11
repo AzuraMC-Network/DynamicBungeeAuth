@@ -1,24 +1,25 @@
 package net.uraharanz.plugins.dynamicbungeeauth.listeners;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.event.EventHandler;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.fix.Fix;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class LeaveListener
 implements Listener {
-    private main plugin;
+    private DBAPlugin plugin;
 
-    public LeaveListener(main main2) {
-        this.plugin = main2;
+    public LeaveListener(DBAPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority=64)

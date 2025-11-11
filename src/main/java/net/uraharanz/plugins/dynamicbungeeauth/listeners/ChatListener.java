@@ -5,19 +5,19 @@ import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
 public class ChatListener
 implements Listener {
-    private main plugin;
+    private DBAPlugin plugin;
     private int Method;
 
-    public ChatListener(main main2) {
-        this.plugin = main2;
-        this.Method = main2.getConfigLoader().getIntegerCFG("WorkMethod.Value");
+    public ChatListener(DBAPlugin plugin) {
+        this.plugin = plugin;
+        this.Method = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
     }
 
     @EventHandler(priority=64)

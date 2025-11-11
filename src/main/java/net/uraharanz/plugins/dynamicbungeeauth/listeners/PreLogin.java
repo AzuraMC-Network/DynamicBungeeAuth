@@ -1,14 +1,13 @@
 package net.uraharanz.plugins.dynamicbungeeauth.listeners;
 
-import java.util.UUID;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackMET;
@@ -17,9 +16,11 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.random.SaltGenerator;
 
+import java.util.UUID;
+
 public class PreLogin
 implements Listener {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final int Method;
     private final int lengthC;
     private final boolean protectCrackedAccounts;
@@ -30,17 +31,17 @@ implements Listener {
     private final String nameCheck;
     private final boolean floodgateAuto;
 
-    public PreLogin(main main2) {
-        this.plugin = main2;
-        this.Method = main2.getConfigLoader().getIntegerCFG("WorkMethod.Value");
-        this.lengthC = main2.getConfigLoader().getIntegerCFG("Options.CaptchaLength");
-        this.protectCrackedAccounts = main2.getConfigLoader().getBooleanCFG("Options.ProtectRegisteredCrackedAccounts");
-        this.nameRegex = main2.getConfigLoader().getStringCFG("Options.NameRegex");
-        this.messageMaxCracked = main2.getConfigLoader().getStringMSG("KickMessages.MaxLoginCracked");
-        this.maxLogin = main2.getConfigLoader().getStringMSG("KickMessages.MaxLogin");
-        this.maxLoginMode = main2.getConfigLoader().getIntegerCFG("Options.MaxLogin.Mode");
-        this.nameCheck = main2.getConfigLoader().getStringMSG("KickMessages.NameCheck");
-        this.floodgateAuto = main2.getConfigLoader().getBooleanCFG("Options.Floodgate.AutoRegister");
+    public PreLogin(DBAPlugin plugin) {
+        this.plugin = plugin;
+        this.Method = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
+        this.lengthC = plugin.getConfigLoader().getIntegerCFG("Options.CaptchaLength");
+        this.protectCrackedAccounts = plugin.getConfigLoader().getBooleanCFG("Options.ProtectRegisteredCrackedAccounts");
+        this.nameRegex = plugin.getConfigLoader().getStringCFG("Options.NameRegex");
+        this.messageMaxCracked = plugin.getConfigLoader().getStringMSG("KickMessages.MaxLoginCracked");
+        this.maxLogin = plugin.getConfigLoader().getStringMSG("KickMessages.MaxLogin");
+        this.maxLoginMode = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.Mode");
+        this.nameCheck = plugin.getConfigLoader().getStringMSG("KickMessages.NameCheck");
+        this.floodgateAuto = plugin.getConfigLoader().getBooleanCFG("Options.Floodgate.AutoRegister");
     }
 
     /*

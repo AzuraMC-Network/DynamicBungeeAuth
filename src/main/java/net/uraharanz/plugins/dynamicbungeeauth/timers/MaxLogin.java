@@ -1,12 +1,12 @@
 package net.uraharanz.plugins.dynamicbungeeauth.timers;
 
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
+
 import java.util.concurrent.TimeUnit;
 
-import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
-
 public class MaxLogin {
-    private static main plugin;
+    private static DBAPlugin plugin;
     private static int max;
     private static int seconds;
     private static int currentCount;
@@ -14,14 +14,14 @@ public class MaxLogin {
     private static int mode;
     private static int shield;
 
-    public MaxLogin(main main2) {
-        plugin = main2;
+    public MaxLogin(DBAPlugin plugin) {
+        MaxLogin.plugin = plugin;
         currentCount = 0;
-        max = main2.getConfigLoader().getIntegerCFG("Options.MaxLogin.Max");
-        seconds = main2.getConfigLoader().getIntegerCFG("Options.MaxLogin.Seconds");
-        enabled = main2.getConfigLoader().getBooleanCFG("Options.MaxLogin.Enabled");
-        mode = main2.getConfigLoader().getIntegerCFG("Options.MaxLogin.Mode");
-        shield = main2.getConfigLoader().getIntegerCFG("Options.MaxLogin.ShieldDuration");
+        max = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.Max");
+        seconds = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.Seconds");
+        enabled = plugin.getConfigLoader().getBooleanCFG("Options.MaxLogin.Enabled");
+        mode = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.Mode");
+        shield = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.ShieldDuration");
     }
 
     public void resetCountTimer() {
@@ -56,10 +56,10 @@ public class MaxLogin {
     }
 
     private static void startProtection() {
-        plugin.getProxy().getScheduler().runAsync(main.plugin, () -> ServerState.setState(ServerState.ATTACK));
+        plugin.getProxy().getScheduler().runAsync(DBAPlugin.plugin, () -> ServerState.setState(ServerState.ATTACK));
     }
 
     private static void removeProtection(int n) {
-        plugin.getProxy().getScheduler().schedule(main.plugin, () -> ServerState.setState(ServerState.NORMAL), n, TimeUnit.SECONDS);
+        plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> ServerState.setState(ServerState.NORMAL), n, TimeUnit.SECONDS);
     }
 }

@@ -1,24 +1,21 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.configs;
 
 import com.google.common.io.ByteStreams;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+
+import java.io.*;
 
 public class Files {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private Configuration config;
     private ConfigurationProvider configp;
     private File file;
 
-    public Files(main main2) {
-        this.plugin = main2;
+    public Files(DBAPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public void createConfigs() {

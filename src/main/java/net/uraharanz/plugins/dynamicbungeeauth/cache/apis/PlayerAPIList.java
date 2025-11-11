@@ -1,18 +1,19 @@
 package net.uraharanz.plugins.dynamicbungeeauth.cache.apis;
 
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 
 public class PlayerAPIList {
-    private final main plugin;
+    private final DBAPlugin plugin;
     private final List<PlayerAPI> requests;
     private final int cleanIntervalMinutes;
 
-    public PlayerAPIList(main plugin) {
+    public PlayerAPIList(DBAPlugin plugin) {
         this.plugin = plugin;
         this.requests = new ArrayList<>();
         this.cleanIntervalMinutes = plugin.getConfigLoader().getIntegerCFG("Timers.CleanRequest");
@@ -45,7 +46,7 @@ public class PlayerAPIList {
     }
 
     public void cleanRequest() {
-        this.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
+        this.plugin.getProxy().getScheduler().schedule(DBAPlugin.plugin, () -> {
             List<PlayerAPI> expiredRequests = new ArrayList<>();
             for (PlayerAPI playerAPI : this.requests) {
                 ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(playerAPI.getName());
