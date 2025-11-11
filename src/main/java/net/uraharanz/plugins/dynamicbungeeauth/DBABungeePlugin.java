@@ -21,7 +21,6 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.configs.Files;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.importers.AuthmeImporter;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.importers.SQLImp;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.PoolManager;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.smtp.EmailSystem;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.HashMap;
@@ -42,7 +41,6 @@ extends Plugin {
     private LoginTimer loginTimer;
     private MaxLogin maxLogin;
     private SpamPlayerList spamPlayerList;
-    private EmailSystem emailSystem;
     private ConfigLoader configLoader;
     private FloodgateApi floodgateApi;
     public static HashMap<String, Boolean> serverLobby;

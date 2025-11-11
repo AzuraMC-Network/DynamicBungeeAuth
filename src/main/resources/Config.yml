@@ -175,16 +175,6 @@ APIS:
       Enable: false
       Fallback: 1
 
-# SMTP Configuration
-SMTP:
-  host: 'localhost'
-  port: '25'
-  user: 'root'
-  pass: 'password'
-  from: 'account@dynamicbungeeauth.net'
-  file: 'Index.html'
-  subj: 'DynamicBungeeAuth'
-
 # Database Importers
 # Currently supported: AUTHME HASH: SHA256
 Importers:
