@@ -14,67 +14,119 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class LeaveListener
-implements Listener {
-    private DBAPlugin plugin;
+/**
+ * @author an5w1r@163.com
+ */
+public class LeaveListener implements Listener {
+    private final DBAPlugin plugin;
 
     public LeaveListener(DBAPlugin plugin) {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority=64)
-    public void onDisconnect(PlayerDisconnectEvent playerDisconnectEvent) {
-        Fix fix;
-        final ProxiedPlayer proxiedPlayer = playerDisconnectEvent.getPlayer();
-        PlayerData playerData = this.plugin.getPlayerDataList().searchPlayer(proxiedPlayer.getName());
-        if (playerData != null) {
-            playerData.setValid(false);
-            playerData.setPlaying(false);
-            if (playerDisconnectEvent.getPlayer().getServer() != null) {
-                SQL.setPlayerData(proxiedPlayer, "server", playerDisconnectEvent.getPlayer().getServer().getInfo().getName());
+    @EventHandler(priority = 64)
+    public void onDisconnect(PlayerDisconnectEvent event) {
+        final ProxiedPlayer player = event.getPlayer();
+
+        handlePlayerData(player);
+        updateDatabaseOnLeave(player);
+        cancelScheduledTasks(player);
+        cleanupFixList(player);
+    }
+
+    private void handlePlayerData(ProxiedPlayer player) {
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
+
+        if (playerData == null) {
+            return;
+        }
+
+        playerData.setValid(false);
+        playerData.setPlaying(false);
+
+        saveCurrentServer(player);
+    }
+
+    private void saveCurrentServer(ProxiedPlayer player) {
+        if (player.getServer() != null) {
+            String serverName = player.getServer().getInfo().getName();
+            SQL.setPlayerData(player, "server", serverName);
+        }
+    }
+
+    private void updateDatabaseOnLeave(final ProxiedPlayer player) {
+        SQL.isPlayerDB(player, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean isRegistered) {
+                if (isRegistered) {
+                    updateLastJoinTime(player);
+                    setPlayerOffline(player);
+                    decrementIPPlayingCount(player);
+                }
             }
-            SQL.isPlayerDB(proxiedPlayer, new CallbackSQL<Boolean>(){
 
-                @Override
-                public void done(Boolean bl) {
-                    if (bl) {
-                        SQL.getPlayerDataS(proxiedPlayer, "valid", new CallbackSQL<String>(){
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
-                            @Override
-                            public void done(String string) {
-                                if (string.equals("1")) {
-                                    Date date = new Date();
-                                    Timestamp timestamp = new Timestamp(date.getTime());
-                                    SQL.setPlayerData(proxiedPlayer, "lastjoin", timestamp.toString());
-                                }
-                            }
-
-                            @Override
-                            public void error(Exception exception) {
-                            }
-                        });
-                        SQL.setPlayerData(proxiedPlayer, "valid", "0");
-                        SQL.mathIPTable(proxiedPlayer, "-", "playing", 1);
-                    }
+    private void updateLastJoinTime(final ProxiedPlayer player) {
+        SQL.getPlayerDataS(player, "valid", new CallbackSQL<String>() {
+            @Override
+            public void done(String validStatus) {
+                if (validStatus.equals("1")) {
+                    Timestamp currentTime = new Timestamp(new Date().getTime());
+                    SQL.setPlayerData(player, "lastjoin", currentTime.toString());
                 }
+            }
 
-                @Override
-                public void error(Exception exception) {
-                }
-            });
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void setPlayerOffline(ProxiedPlayer player) {
+        SQL.setPlayerData(player, "valid", "0");
+    }
+
+    private void decrementIPPlayingCount(ProxiedPlayer player) {
+        SQL.mathIPTable(player, "-", "playing", 1);
+    }
+
+    private void cancelScheduledTasks(ProxiedPlayer player) {
+        String playerName = player.getName();
+
+        cancelRegisterTimer(playerName);
+        cancelLoginTimer(playerName);
+    }
+
+    private void cancelRegisterTimer(String playerName) {
+        ScheduledTask registerTask = plugin.getRegisterTimer().getTimers().get(playerName);
+
+        if (registerTask != null) {
+            registerTask.cancel();
+            plugin.getRegisterTimer().getTimers().remove(playerName);
         }
-        ScheduledTask scheduledTask = this.plugin.getRegisterTimer().getTimers().get(proxiedPlayer.getName());
-        ScheduledTask scheduledTask2 = this.plugin.getLoginTimer().getTimers().get(proxiedPlayer.getName());
-        if (scheduledTask != null) {
-            this.plugin.getRegisterTimer().getTimers().get(proxiedPlayer.getName()).cancel();
-            this.plugin.getRegisterTimer().getTimers().remove(proxiedPlayer.getName());
+    }
+
+    private void cancelLoginTimer(String playerName) {
+        ScheduledTask loginTask = plugin.getLoginTimer().getTimers().get(playerName);
+
+        if (loginTask != null) {
+            loginTask.cancel();
+            plugin.getLoginTimer().getTimers().remove(playerName);
         }
-        if (scheduledTask2 != null) {
-            this.plugin.getLoginTimer().getTimers().get(proxiedPlayer.getName()).cancel();
-            this.plugin.getLoginTimer().getTimers().remove(proxiedPlayer.getName());
-        }
-        if ((fix = this.plugin.getFixList().searchPlayer(playerDisconnectEvent.getPlayer().getName())) != null) {
-            this.plugin.getFixList().removePlayer(playerDisconnectEvent.getPlayer().getName());
+    }
+
+    private void cleanupFixList(ProxiedPlayer player) {
+        Fix fix = plugin.getFixList().searchPlayer(player.getName());
+
+        if (fix != null) {
+            plugin.getFixList().removePlayer(player.getName());
         }
     }
 }
