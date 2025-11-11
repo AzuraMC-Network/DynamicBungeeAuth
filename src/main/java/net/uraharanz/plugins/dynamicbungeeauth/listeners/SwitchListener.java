@@ -1,6 +1,7 @@
 package net.uraharanz.plugins.dynamicbungeeauth.listeners;
 
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -9,93 +10,125 @@ import net.uraharanz.plugins.dynamicbungeeauth.cache.fix.Fix;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
 
-public class SwitchListener
-implements Listener {
+/**
+ * @author an5w1r@163.com
+ */
+public class SwitchListener implements Listener {
+
     private final DBABungeePlugin plugin;
-    private final boolean OldVersions;
+    private final boolean isOldVersionMode;
 
     public SwitchListener(DBABungeePlugin plugin) {
         this.plugin = plugin;
-        this.OldVersions = plugin.getConfigLoader().getBooleanCFG("Options.OldVersion");
+        this.isOldVersionMode = plugin.getConfigLoader().getBooleanCFG("Options.OldVersion");
     }
 
-    @EventHandler(priority=64)
-    public void onSwitch(ServerConnectEvent serverConnectEvent) {
-        ServerInfo serverInfo = serverConnectEvent.getTarget();
-        if (this.OldVersions) {
-            Fix fix = this.plugin.getFixList().searchPlayer(serverConnectEvent.getPlayer().getName());
-            if (fix == null) {
-                Fix fix2 = new Fix(serverConnectEvent.getPlayer().getName(), serverConnectEvent.getPlayer().getUniqueId().toString());
-                ServerInfo serverInfo2 = ServerMethods.getAuth();
-                if (serverInfo2 == null) {
-                    serverInfo2 = ServerMethods.getLobby();
-                    if (serverInfo2 != null) {
-                        serverConnectEvent.setTarget(serverInfo2);
-                    } else {
-                        serverConnectEvent.setTarget(serverInfo);
-                    }
-                } else {
-                    serverConnectEvent.setTarget(serverInfo);
-                }
-                this.plugin.getFixList().addPlayer(fix2);
-            } else {
-                PlayerData playerData = this.plugin.getPlayerDataList().searchPlayer(serverConnectEvent.getPlayer().getName());
-                if (playerData == null) {
-                    serverConnectEvent.setCancelled(true);
-                } else if (!playerData.isValid()) {
-                    serverConnectEvent.setCancelled(true);
-                }
-            }
+    @EventHandler(priority = 64)
+    public void onSwitch(ServerConnectEvent event) {
+        if (isOldVersionMode) {
+            handleOldVersionMode(event);
         } else {
-            PlayerData playerData = this.plugin.getPlayerDataList().searchPlayer(serverConnectEvent.getPlayer().getName());
-            if (serverConnectEvent.getReason() == ServerConnectEvent.Reason.JOIN_PROXY || serverConnectEvent.getPlayer().getServer() == null) {
-                if (playerData == null) {
-                    ServerInfo serverInfo3 = ServerMethods.getAuth();
-                    if (serverInfo3 == null) {
-                        serverInfo3 = ServerMethods.getLobby();
-                        if (serverInfo3 != null) {
-                            serverConnectEvent.setTarget(serverInfo3);
-                        } else {
-                            serverConnectEvent.setTarget(serverInfo);
-                        }
-                    } else {
-                        serverConnectEvent.setTarget(serverInfo);
-                    }
-                } else if (playerData.isPremium()) {
-                    ServerInfo serverInfo4 = ServerMethods.getLobby();
-                    if (serverInfo4 != null) {
-                        serverConnectEvent.setTarget(serverInfo4);
-                    } else {
-                        serverInfo4 = ServerMethods.getAuth();
-                        if (serverInfo4 != null) {
-                            serverConnectEvent.setTarget(serverInfo4);
-                        } else {
-                            serverConnectEvent.setTarget(serverInfo);
-                        }
-                    }
-                } else {
-                    ServerInfo serverInfo5 = ServerMethods.getAuth();
-                    if (serverInfo5 == null) {
-                        serverInfo5 = ServerMethods.getLobby();
-                        if (serverInfo5 != null) {
-                            serverConnectEvent.setTarget(serverInfo5);
-                        } else {
-                            serverConnectEvent.setTarget(serverInfo);
-                        }
-                    } else {
-                        serverConnectEvent.setTarget(serverInfo);
-                    }
-                }
-            } else {
-                PlayerData playerData2 = this.plugin.getPlayerDataList().searchPlayer(serverConnectEvent.getPlayer().getName());
-                if (playerData2 == null) {
-                    serverConnectEvent.setCancelled(true);
-                } else if (!playerData2.isValid()) {
-                    serverConnectEvent.setCancelled(true);
-                } else {
-                    serverConnectEvent.setTarget(serverInfo);
-                }
-            }
+            handleNormalMode(event);
         }
+    }
+
+    private void handleOldVersionMode(ServerConnectEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+        String playerName = player.getName();
+
+        Fix fix = plugin.getFixList().searchPlayer(playerName);
+
+        // first connection, create Fix record
+        if (fix == null) {
+            Fix newFix = new Fix(playerName, player.getUniqueId().toString());
+            plugin.getFixList().addPlayer(newFix);
+
+            ServerInfo targetServer = selectAuthOrLobbyServer(event.getTarget());
+            event.setTarget(targetServer);
+            return;
+        }
+
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(playerName);
+        if (!isPlayerValid(playerData)) {
+            event.setCancelled(true);
+        }
+    }
+
+    private void handleNormalMode(ServerConnectEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+        ServerConnectEvent.Reason reason = event.getReason();
+
+        if (isFirstJoin(reason, player)) {
+            handleFirstJoin(event);
+        } else {
+            handleServerSwitch(event);
+        }
+    }
+
+    private boolean isFirstJoin(ServerConnectEvent.Reason reason, ProxiedPlayer player) {
+        return reason == ServerConnectEvent.Reason.JOIN_PROXY || player.getServer() == null;
+    }
+
+    private void handleFirstJoin(ServerConnectEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
+
+        ServerInfo targetServer;
+
+        if (playerData == null) {
+            // new player -> auth/lobby
+            targetServer = selectAuthOrLobbyServer(event.getTarget());
+        } else if (playerData.isPremium()) {
+            // premium player -> (lobby -> auth)
+            targetServer = selectLobbyOrAuthServer(event.getTarget());
+        } else {
+            // cracked player -> (auth -> lobby)
+            targetServer = selectAuthOrLobbyServer(event.getTarget());
+        }
+
+        event.setTarget(targetServer);
+    }
+
+    private void handleServerSwitch(ServerConnectEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(player.getName());
+
+        if (isPlayerValid(playerData)) {
+            event.setTarget(event.getTarget());
+        } else {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean isPlayerValid(PlayerData playerData) {
+        return playerData != null && playerData.isValid();
+    }
+
+    private ServerInfo selectAuthOrLobbyServer(ServerInfo originalTarget) {
+        ServerInfo authServer = ServerMethods.getAuth();
+        if (authServer != null) {
+            return authServer;
+        }
+
+        ServerInfo lobbyServer = ServerMethods.getLobby();
+        if (lobbyServer != null) {
+            return lobbyServer;
+        }
+
+        return originalTarget;
+    }
+
+    private ServerInfo selectLobbyOrAuthServer(ServerInfo originalTarget) {
+        ServerInfo lobbyServer = ServerMethods.getLobby();
+        if (lobbyServer != null) {
+            return lobbyServer;
+        }
+
+        ServerInfo authServer = ServerMethods.getAuth();
+        if (authServer != null) {
+            return authServer;
+        }
+
+        return originalTarget;
     }
 }
