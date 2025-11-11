@@ -11,52 +11,80 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author an5w1r@163.com
+ */
 public class RegisterTimer {
+
     private final DBABungeePlugin plugin;
+
     @Getter
     private final HashMap<String, ScheduledTask> timers;
-    private final int time;
+
+    private final int maxRegisterTimeSeconds;
 
     public RegisterTimer(DBABungeePlugin plugin) {
         this.plugin = plugin;
         this.timers = new HashMap<>();
-        this.time = plugin.getConfigLoader().getIntegerCFG("Timers.RegisterMax");
+        this.maxRegisterTimeSeconds = plugin.getConfigLoader().getIntegerCFG("Timers.RegisterMax");
     }
 
-    public void regTimer(final ProxiedPlayer proxiedPlayer) {
-        this.timers.put(proxiedPlayer.getName(), this.plugin.getProxy().getScheduler().schedule(this.plugin, () -> {
-            if (this.timers.containsKey(proxiedPlayer.getName())) {
-                try {
-                    SQL.getPlayerDataS(proxiedPlayer.getName(), "valid", new CallbackSQL<String>(){
+    public void regTimer(ProxiedPlayer player) {
+        String playerName = player.getName();
 
-                        @Override
-                        public void done(String string) {
-                            if (string != null) {
-                                if (string.equals("0")) {
-                                    RegisterTimer.this.timers.get(proxiedPlayer.getName()).cancel();
-                                    RegisterTimer.this.timers.remove(proxiedPlayer.getName());
-                                    proxiedPlayer.disconnect(MessageHandler.createColoredMessage(RegisterTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.register")));
-                                } else {
-                                    RegisterTimer.this.timers.get(proxiedPlayer.getName()).cancel();
-                                    RegisterTimer.this.timers.remove(proxiedPlayer.getName());
-                                }
-                            } else {
-                                RegisterTimer.this.timers.get(proxiedPlayer.getName()).cancel();
-                                RegisterTimer.this.timers.remove(proxiedPlayer.getName());
-                                proxiedPlayer.disconnect(MessageHandler.createColoredMessage(RegisterTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.register")));
-                            }
-                        }
+        ScheduledTask task = plugin.getProxy().getScheduler().schedule(
+                plugin,
+                () -> handleRegisterTimeout(player),
+                maxRegisterTimeSeconds,
+                TimeUnit.SECONDS
+        );
 
-                        @Override
-                        public void error(Exception exception) {
-                        }
-                    });
+        timers.put(playerName, task);
+    }
+
+    private void handleRegisterTimeout(ProxiedPlayer player) {
+        String playerName = player.getName();
+
+        if (!timers.containsKey(playerName)) {
+            return;
+        }
+
+        try {
+            SQL.getPlayerDataS(playerName, "valid", new CallbackSQL<String>() {
+                @Override
+                public void done(String validStatus) {
+                    boolean isPlayerRegistered = validStatus != null && !validStatus.equals("0");
+
+                    if (isPlayerRegistered) {
+                        cancelTimer(playerName);
+                    } else {
+                        kickPlayerForTimeout(player, playerName);
+                    }
                 }
-                catch (Exception exception) {
+
+                @Override
+                public void error(Exception exception) {
+                    cancelTimer(playerName);
                     exception.printStackTrace();
                 }
-            }
-        }, this.time, TimeUnit.SECONDS));
+            });
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            cancelTimer(playerName);
+        }
     }
 
+    private void kickPlayerForTimeout(ProxiedPlayer player, String playerName) {
+        cancelTimer(playerName);
+
+        String kickMessage = plugin.getConfigLoader().getStringMSG("KickMessages.register");
+        player.disconnect(MessageHandler.createColoredMessage(kickMessage));
+    }
+
+    private void cancelTimer(String playerName) {
+        ScheduledTask task = timers.remove(playerName);
+        if (task != null) {
+            task.cancel();
+        }
+    }
 }

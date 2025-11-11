@@ -41,18 +41,14 @@ public class MaxLogin {
     }
 
     public boolean mustBlock() {
-        if (currentCount > max && currentCount != 0) {
-            if (mode == 2) {
-                if (ServerState.getState() == ServerState.NORMAL) {
-                    MaxLogin.startProtection();
-                    MaxLogin.removeProtection(shield);
-                    return true;
-                }
-                return true;
-            }
-            return true;
+        boolean shouldBlock = currentCount > max && currentCount != 0;
+
+        if (shouldBlock && mode == 2 && ServerState.getState() == ServerState.NORMAL) {
+            MaxLogin.startProtection();
+            MaxLogin.removeProtection(shield);
         }
-        return false;
+
+        return shouldBlock;
     }
 
     private static void startProtection() {
