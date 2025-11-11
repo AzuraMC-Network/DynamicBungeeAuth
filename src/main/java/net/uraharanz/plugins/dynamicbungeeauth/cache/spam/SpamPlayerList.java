@@ -92,12 +92,12 @@ public class SpamPlayerList {
                         } else {
                             if (this.sendTitles) {
                                 Title title = ProxyServer.getInstance().createTitle();
-                                title.title(MessageHandler.sendMSG(this.titleRegisterTop));
+                                title.title(MessageHandler.createColoredMessage(this.titleRegisterTop));
                                 if (this.captchaEnabled) {
                                     PlayerCache playerCache = DBABungeePlugin.plugin.getPlayerCacheList().searchCache(player.getName());
-                                    title.subTitle(MessageHandler.sendMSG(this.titleRegisterBottom.replaceAll("%captcha%", playerCache.getCaptcha())));
+                                    title.subTitle(MessageHandler.createColoredMessage(this.titleRegisterBottom.replaceAll("%captcha%", playerCache.getCaptcha())));
                                 } else {
-                                    title.subTitle(MessageHandler.sendMSG(this.titleRegisterBottom));
+                                    title.subTitle(MessageHandler.createColoredMessage(this.titleRegisterBottom));
                                 }
 
                                 title.fadeIn(this.titleRegisterFadeIn);
@@ -117,9 +117,9 @@ public class SpamPlayerList {
                                         }
                                     } else if (this.captchaEnabled) {
                                         PlayerCache playerCache = DBABungeePlugin.plugin.getPlayerCacheList().searchCache(spamPlayer.getName());
-                                        player.sendMessage(MessageHandler.sendMSG(message.replaceAll("%captcha%", playerCache.getCaptcha())));
+                                        player.sendMessage(MessageHandler.createColoredMessage(message.replaceAll("%captcha%", playerCache.getCaptcha())));
                                     } else {
-                                        player.sendMessage(MessageHandler.sendMSG(message));
+                                        player.sendMessage(MessageHandler.createColoredMessage(message));
                                     }
                                 }
                             }
@@ -130,8 +130,8 @@ public class SpamPlayerList {
                         if (player != null) {
                             if (this.sendTitles) {
                                 Title title = ProxyServer.getInstance().createTitle();
-                                title.title(MessageHandler.sendMSG(this.titleLoginTop));
-                                title.subTitle(MessageHandler.sendMSG(this.titleLoginBottom));
+                                title.title(MessageHandler.createColoredMessage(this.titleLoginTop));
+                                title.subTitle(MessageHandler.createColoredMessage(this.titleLoginBottom));
                                 title.fadeIn(this.titleLoginFadeIn);
                                 title.stay(this.titleLoginStay);
                                 title.fadeOut(this.titleLoginFadeOut);
@@ -143,7 +143,7 @@ public class SpamPlayerList {
                                     if (this.messageLogins.indexOf(message) != 0 && this.messageLogins.indexOf(message) != this.messageLogins.size() - 1) {
                                         MessageHandler.sendCenteredMessage(player, message.replaceAll("&", "§"));
                                     } else {
-                                        player.sendMessage(MessageHandler.sendMSG(message));
+                                        player.sendMessage(MessageHandler.createColoredMessage(message));
                                     }
                                 }
                             }

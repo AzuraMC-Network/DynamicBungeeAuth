@@ -21,7 +21,7 @@ public class LogoutCMD extends Command {
     public void execute(CommandSender commandSender, String[] stringArray) {
         if (commandSender instanceof ProxiedPlayer) {
             ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
-            proxiedPlayer.disconnect(MessageHandler.sendMSG(this.plugin.getConfigLoader().getStringMSG("KickMessages.Logout")));
+            proxiedPlayer.disconnect(MessageHandler.createColoredMessage(this.plugin.getConfigLoader().getStringMSG("KickMessages.Logout")));
             this.plugin.getPlayerDataList().removePlayer(proxiedPlayer.getName());
             this.plugin.getPlayerCacheList().removeCache(proxiedPlayer.getName());
             SQL.setPlayerData(proxiedPlayer, "lwlogged", "0");

@@ -36,7 +36,7 @@ public class LoginTimer {
                                     LoginTimer.this.timers.get(proxiedPlayer.getName()).cancel();
                                     LoginTimer.this.timers.remove(proxiedPlayer.getName());
                                     SQL.setPlayerData(proxiedPlayer, "lwlogged", "0");
-                                    proxiedPlayer.disconnect(MessageHandler.sendMSG(LoginTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.login")));
+                                    proxiedPlayer.disconnect(MessageHandler.createColoredMessage(LoginTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.login")));
                                 } else {
                                     LoginTimer.this.timers.get(proxiedPlayer.getName()).cancel();
                                     LoginTimer.this.timers.remove(proxiedPlayer.getName());
@@ -45,7 +45,7 @@ public class LoginTimer {
                                 LoginTimer.this.timers.get(proxiedPlayer.getName()).cancel();
                                 LoginTimer.this.timers.remove(proxiedPlayer.getName());
                                 SQL.setPlayerData(proxiedPlayer, "lwlogged", "0");
-                                proxiedPlayer.disconnect(MessageHandler.sendMSG(LoginTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.login")));
+                                proxiedPlayer.disconnect(MessageHandler.createColoredMessage(LoginTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.login")));
                             }
                         }
 

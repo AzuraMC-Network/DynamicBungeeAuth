@@ -112,8 +112,8 @@ public class PlayersMethods {
         int stay = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.stay");
         int fadeOut = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG(configPath + ".options.fadeout");
 
-        title.title(MessageHandler.sendMSG(topMessage));
-        title.subTitle(MessageHandler.sendMSG(bottomMessage));
+        title.title(MessageHandler.createColoredMessage(topMessage));
+        title.subTitle(MessageHandler.createColoredMessage(bottomMessage));
         title.fadeIn(fadeIn);
         title.stay(stay);
         title.fadeOut(fadeOut);
@@ -121,7 +121,7 @@ public class PlayersMethods {
 
     private static void configureRegisterTitle(Title title, ProxiedPlayer player) {
         String topMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG("Titles.register.top");
-        title.title(MessageHandler.sendMSG(topMessage));
+        title.title(MessageHandler.createColoredMessage(topMessage));
 
         boolean captchaEnabled = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
         String bottomMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG("Titles.register.bottom");
@@ -131,7 +131,7 @@ public class PlayersMethods {
             bottomMessage = bottomMessage.replaceAll("%captcha%", cache.getCaptcha());
         }
 
-        title.subTitle(MessageHandler.sendMSG(bottomMessage));
+        title.subTitle(MessageHandler.createColoredMessage(bottomMessage));
 
         int fadeIn = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.fadein");
         int stay = DBABungeePlugin.plugin.getConfigLoader().getIntegerMSG("Titles.register.options.stay");
@@ -221,7 +221,7 @@ public class PlayersMethods {
             }
 
             if (isFirstOrLast) {
-                player.sendMessage(MessageHandler.sendMSG(message));
+                player.sendMessage(MessageHandler.createColoredMessage(message));
             } else {
                 MessageHandler.sendCenteredMessage(player, message.replaceAll("&", "§"));
             }
@@ -429,7 +429,7 @@ public class PlayersMethods {
 
     private static void kickForIPLimit(ProxiedPlayer player, String messageKey) {
         String kickMessage = DBABungeePlugin.plugin.getConfigLoader().getStringMSG(messageKey);
-        player.disconnect(MessageHandler.sendMSG(kickMessage));
+        player.disconnect(MessageHandler.createColoredMessage(kickMessage));
     }
 
     public static void setPlayerValidSession(final ProxiedPlayer player) {
@@ -718,7 +718,7 @@ public class PlayersMethods {
         String kickMessage = DBABungeePlugin.plugin.getConfigLoader()
                 .getStringMSG("KickMessages.unregisterkick")
                 .replaceAll("%admin%", adminName);
-        player.disconnect(MessageHandler.sendMSG(kickMessage));
+        player.disconnect(MessageHandler.createColoredMessage(kickMessage));
 
         playerRemoveCache(player);
         SQL.mathIPTable(player, "-", "playing", 1);

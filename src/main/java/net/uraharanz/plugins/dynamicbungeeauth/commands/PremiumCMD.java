@@ -113,7 +113,7 @@ public class PremiumCMD extends Command {
         String message = plugin.getConfigLoader()
                 .getStringMSG("Commands.premium.not_registered")
                 .replaceAll("%captcha%", cache.getCaptcha());
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 
     private void processPremiumModeConversion(final ProxiedPlayer player) {
@@ -210,11 +210,11 @@ public class PremiumCMD extends Command {
         sendMessage(player, "Commands.premium.successful");
 
         String kickMessage = plugin.getConfigLoader().getStringMSG("KickMessages.PremiumKick");
-        player.disconnect(MessageHandler.sendMSG(kickMessage));
+        player.disconnect(MessageHandler.createColoredMessage(kickMessage));
     }
 
     private void sendMessage(CommandSender sender, String messageKey) {
         String message = plugin.getConfigLoader().getStringMSG(messageKey);
-        sender.sendMessage(MessageHandler.sendMSG(message));
+        sender.sendMessage(MessageHandler.createColoredMessage(message));
     }
 }

@@ -333,7 +333,7 @@ public class PreLogin implements Listener {
 
     private void cancelEvent(PreLoginEvent event, String message) {
         if (message != null) {
-            event.setCancelReason(MessageHandler.sendMSG(message));
+            event.setCancelReason(MessageHandler.createColoredMessage(message));
         }
         event.setCancelled(true);
         event.completeIntent(plugin);

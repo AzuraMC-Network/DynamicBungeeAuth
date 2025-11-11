@@ -1,132 +1,108 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.messages;
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
-public enum FontInfo {
-    A('A', 5),
-    a('a', 5),
-    B('B', 5),
-    b('b', 5),
-    C('C', 5),
-    c('c', 5),
-    D('D', 5),
-    d('d', 5),
-    E('E', 5),
-    e('e', 5),
-    F('F', 5),
-    f('f', 4),
-    G('G', 5),
-    g('g', 5),
-    H('H', 5),
-    h('h', 5),
-    I('I', 3),
-    i('i', 1),
-    J('J', 5),
-    j('j', 5),
-    K('K', 5),
-    k('k', 4),
-    L('L', 5),
-    l('l', 1),
-    M('M', 5),
-    m('m', 5),
-    N('N', 5),
-    n('n', 5),
-    Ñ('Ñ', 5),
-    ñ('ñ', 5),
-    O('O', 5),
-    o('o', 5),
-    P('P', 5),
-    p('p', 5),
-    Q('Q', 5),
-    q('q', 5),
-    R('R', 5),
-    r('r', 5),
-    S('S', 5),
-    s('s', 5),
-    T('T', 5),
-    t('t', 4),
-    U('U', 5),
-    u('u', 5),
-    V('V', 5),
-    v('v', 5),
-    W('W', 5),
-    w('w', 5),
-    X('X', 5),
-    x('x', 5),
-    Y('Y', 5),
-    y('y', 5),
-    Z('Z', 5),
-    z('z', 5),
-    NUM_1('1', 5),
-    NUM_2('2', 5),
-    NUM_3('3', 5),
-    NUM_4('4', 5),
-    NUM_5('5', 5),
-    NUM_6('6', 5),
-    NUM_7('7', 5),
-    NUM_8('8', 5),
-    NUM_9('9', 5),
-    NUM_0('0', 5),
-    EXCLAMATION_BEGIN('¡', 1),
-    EXCLAMATION_END('!', 1),
-    AT_SYMBOL('@', 6),
-    NUM_SIGN('#', 5),
-    DOLLAR_SIGN('$', 5),
-    PERCENT('%', 5),
-    UP_ARROW('^', 5),
-    AMPERSAND('&', 5),
-    ASTERISK('*', 5),
-    LEFT_PARENTHESIS('(', 4),
-    RIGHT_PARENTHESIS(')', 4),
-    MINUS('-', 5),
-    UNDERSCORE('_', 5),
-    PLUS_SIGN('+', 5),
-    EQUALS_SIGN('=', 5),
-    LEFT_CURL_BRACE('{', 4),
-    RIGHT_CURL_BRACE('}', 4),
-    LEFT_BRACKET('[', 3),
-    RIGHT_BRACKET(']', 3),
-    COLON(':', 1),
-    SEMI_COLON(';', 1),
-    DOUBLE_QUOTE('"', 3),
-    SINGLE_QUOTE('\'', 1),
-    LEFT_ARROW('<', 4),
-    RIGHT_ARROW('>', 4),
-    QUESTION_MARK('?', 5),
-    SLASH('/', 5),
-    BACK_SLASH('\\', 5),
-    LINE('|', 1),
-    TILDE('~', 5),
-    TICK('`', 2),
-    PERIOD('.', 1),
-    COMMA(',', 1),
-    SPACE(' ', 3),
-    DEFAULT('\u0000', 4);
+/**
+ * @author an5w1r@163.com
+ */
+public class FontInfo {
 
-    private static final Map<Character, FontInfo> CHAR_MAP = new HashMap<>(values().length, 1.1F);
-    private final char character;
-    private final int length;
-
-    FontInfo(char var3, int var4) {
-        this.character = var3;
-        this.length = var4;
-    }
-
-    public int getBoldLength() {
-        return this == SPACE ? this.getLength() : this.length + 1;
-    }
-
-    public static FontInfo getDefaultFontInfo(char var0) {
-        return CHAR_MAP.getOrDefault(var0, DEFAULT);
-    }
+    private static final Map<Character, Integer> CHAR_WIDTHS = new HashMap<>();
+    private static final int DEFAULT_WIDTH = 4;
+    private static final int SPACE_WIDTH = 3;
 
     static {
-        for (FontInfo var3 : values()) {
-            CHAR_MAP.put(var3.character, var3);
+        // uppercase (5 pixels wide)
+        for (char c = 'A'; c <= 'Z'; c++) {
+            CHAR_WIDTHS.put(c, 5);
         }
+        CHAR_WIDTHS.put('Ñ', 5);
+
+        // lowercase (mostly 5 pixels wide, some are special)
+        for (char c = 'a'; c <= 'z'; c++) {
+            CHAR_WIDTHS.put(c, 5);
+        }
+        CHAR_WIDTHS.put('ñ', 5);
+        CHAR_WIDTHS.put('f', 4);
+        CHAR_WIDTHS.put('i', 1);
+        CHAR_WIDTHS.put('k', 4);
+        CHAR_WIDTHS.put('l', 1);
+        CHAR_WIDTHS.put('t', 4);
+
+        // numbers (5 pixels wide)
+        for (char c = '0'; c <= '9'; c++) {
+            CHAR_WIDTHS.put(c, 5);
+        }
+
+        // punctuation marks and special characters
+        CHAR_WIDTHS.put('¡', 1);
+        CHAR_WIDTHS.put('!', 1);
+        CHAR_WIDTHS.put('@', 6);
+        CHAR_WIDTHS.put('#', 5);
+        CHAR_WIDTHS.put('$', 5);
+        CHAR_WIDTHS.put('%', 5);
+        CHAR_WIDTHS.put('^', 5);
+        CHAR_WIDTHS.put('&', 5);
+        CHAR_WIDTHS.put('*', 5);
+        CHAR_WIDTHS.put('(', 4);
+        CHAR_WIDTHS.put(')', 4);
+        CHAR_WIDTHS.put('-', 5);
+        CHAR_WIDTHS.put('_', 5);
+        CHAR_WIDTHS.put('+', 5);
+        CHAR_WIDTHS.put('=', 5);
+        CHAR_WIDTHS.put('{', 4);
+        CHAR_WIDTHS.put('}', 4);
+        CHAR_WIDTHS.put('[', 3);
+        CHAR_WIDTHS.put(']', 3);
+        CHAR_WIDTHS.put(':', 1);
+        CHAR_WIDTHS.put(';', 1);
+        CHAR_WIDTHS.put('"', 3);
+        CHAR_WIDTHS.put('\'', 1);
+        CHAR_WIDTHS.put('<', 4);
+        CHAR_WIDTHS.put('>', 4);
+        CHAR_WIDTHS.put('?', 5);
+        CHAR_WIDTHS.put('/', 5);
+        CHAR_WIDTHS.put('\\', 5);
+        CHAR_WIDTHS.put('|', 1);
+        CHAR_WIDTHS.put('~', 5);
+        CHAR_WIDTHS.put('`', 2);
+        CHAR_WIDTHS.put('.', 1);
+        CHAR_WIDTHS.put(',', 1);
+        CHAR_WIDTHS.put(' ', SPACE_WIDTH);
+    }
+
+    // 私有构造函数，防止实例化
+    private FontInfo() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * 获取字符的正常宽度
+     *
+     * @param character 字符
+     * @return 字符宽度（像素）
+     */
+    public static int getLength(char character) {
+        return CHAR_WIDTHS.getOrDefault(character, DEFAULT_WIDTH);
+    }
+
+    /**
+     * 获取字符的粗体宽度
+     *
+     * @param character 字符
+     * @return 字符粗体宽度（像素）
+     */
+    public static int getBoldLength(char character) {
+        return character == ' ' ? SPACE_WIDTH : getLength(character) + 1;
+    }
+
+    /**
+     * 获取空格的宽度
+     *
+     * @return 空格宽度（像素）
+     */
+    public static int getSpaceWidth() {
+        return SPACE_WIDTH;
     }
 }

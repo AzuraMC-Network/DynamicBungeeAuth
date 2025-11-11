@@ -61,7 +61,7 @@ public class LoginCMD extends Command {
         String message = plugin.getConfigLoader()
                 .getStringMSG("Commands.login.register_first")
                 .replaceAll("%captcha%", cache.getCaptcha());
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 
     private void checkPlayerValidStatus(final ProxiedPlayer player, final String[] args) {
@@ -115,7 +115,7 @@ public class LoginCMD extends Command {
     private void handleWrongPassword(ProxiedPlayer player) {
         if (kickOnWrongPassword) {
             String kickMessage = plugin.getConfigLoader().getStringMSG("Commands.login.wrong_kick");
-            player.disconnect(MessageHandler.sendMSG(kickMessage));
+            player.disconnect(MessageHandler.createColoredMessage(kickMessage));
         } else {
             sendMessage(player, "Commands.login.wrong_pass");
         }
@@ -141,7 +141,7 @@ public class LoginCMD extends Command {
 
     private void kickPlayerForIPLimit(ProxiedPlayer player) {
         String kickMessage = plugin.getConfigLoader().getStringMSG("KickMessages.MaxPlayingIP");
-        player.disconnect(MessageHandler.sendMSG(kickMessage));
+        player.disconnect(MessageHandler.createColoredMessage(kickMessage));
     }
 
     private void performSuccessfulLogin(ProxiedPlayer player) {
@@ -168,6 +168,6 @@ public class LoginCMD extends Command {
 
     private void sendMessage(ProxiedPlayer player, String messageKey) {
         String message = plugin.getConfigLoader().getStringMSG(messageKey);
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 }

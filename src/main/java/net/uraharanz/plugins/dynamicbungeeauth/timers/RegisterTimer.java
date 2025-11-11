@@ -35,7 +35,7 @@ public class RegisterTimer {
                                 if (string.equals("0")) {
                                     RegisterTimer.this.timers.get(proxiedPlayer.getName()).cancel();
                                     RegisterTimer.this.timers.remove(proxiedPlayer.getName());
-                                    proxiedPlayer.disconnect(MessageHandler.sendMSG(RegisterTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.register")));
+                                    proxiedPlayer.disconnect(MessageHandler.createColoredMessage(RegisterTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.register")));
                                 } else {
                                     RegisterTimer.this.timers.get(proxiedPlayer.getName()).cancel();
                                     RegisterTimer.this.timers.remove(proxiedPlayer.getName());
@@ -43,7 +43,7 @@ public class RegisterTimer {
                             } else {
                                 RegisterTimer.this.timers.get(proxiedPlayer.getName()).cancel();
                                 RegisterTimer.this.timers.remove(proxiedPlayer.getName());
-                                proxiedPlayer.disconnect(MessageHandler.sendMSG(RegisterTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.register")));
+                                proxiedPlayer.disconnect(MessageHandler.createColoredMessage(RegisterTimer.this.plugin.getConfigLoader().getStringMSG("KickMessages.register")));
                             }
                         }
 

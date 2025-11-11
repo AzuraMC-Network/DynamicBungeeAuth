@@ -148,6 +148,6 @@ public class ChangeCMD extends Command {
 
     private void sendMessage(ProxiedPlayer player, String messageKey) {
         String message = plugin.getConfigLoader().getStringMSG(messageKey);
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 }

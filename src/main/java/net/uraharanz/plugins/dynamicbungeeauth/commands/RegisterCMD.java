@@ -167,7 +167,7 @@ public class RegisterCMD extends Command {
 
     private void kickPlayerForIPLimit(ProxiedPlayer player) {
         String kickMessage = plugin.getConfigLoader().getStringMSG("KickMessages.MaxAccountsIP");
-        player.disconnect(MessageHandler.sendMSG(kickMessage));
+        player.disconnect(MessageHandler.createColoredMessage(kickMessage));
     }
 
     private void performRegistration(final ProxiedPlayer player, final String password) {
@@ -243,13 +243,13 @@ public class RegisterCMD extends Command {
 
     private void sendMessage(ProxiedPlayer player, String messageKey) {
         String message = plugin.getConfigLoader().getStringMSG(messageKey);
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 
     private void sendMessageWithCaptcha(ProxiedPlayer player, String messageKey, PlayerCache cache) {
         String message = plugin.getConfigLoader()
                 .getStringMSG(messageKey)
                 .replaceAll("%captcha%", cache.getCaptcha());
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 }

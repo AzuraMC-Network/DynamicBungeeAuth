@@ -54,7 +54,7 @@ public class CrackedCMD extends Command {
 
     private boolean validateCommandFormat(ProxiedPlayer player, String[] args) {
         if (args.length != 1) {
-            player.sendMessage(MessageHandler.sendMSG(
+            player.sendMessage(MessageHandler.createColoredMessage(
                     "Please use the command correctly /cracked password"
             ));
             return false;
@@ -103,7 +103,7 @@ public class CrackedCMD extends Command {
         PlayersMethods.playerRemoveCache(player);
 
         String successMessage = plugin.getConfigLoader().getStringMSG("Commands.cracked.successful");
-        player.disconnect(MessageHandler.sendMSG(successMessage));
+        player.disconnect(MessageHandler.createColoredMessage(successMessage));
 
         SQL.deletePlayerData(player.getName());
 
@@ -155,6 +155,6 @@ public class CrackedCMD extends Command {
 
     private void sendMessage(ProxiedPlayer player, String messageKey) {
         String message = plugin.getConfigLoader().getStringMSG(messageKey);
-        player.sendMessage(MessageHandler.sendMSG(message));
+        player.sendMessage(MessageHandler.createColoredMessage(message));
     }
 }

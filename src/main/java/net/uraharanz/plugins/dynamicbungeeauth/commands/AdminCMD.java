@@ -77,17 +77,17 @@ public class AdminCMD extends Command {
 
     private void showHelpMessage(CommandSender sender) {
         for (String line : plugin.getConfigLoader().getStringListMSG("HelpADM")) {
-            sender.sendMessage(MessageHandler.sendMSG(line));
+            sender.sendMessage(MessageHandler.createColoredMessage(line));
         }
     }
 
     private void sendMessage(CommandSender sender, String key) {
-        sender.sendMessage(MessageHandler.sendMSG(plugin.getConfigLoader().getStringMSG(key)));
+        sender.sendMessage(MessageHandler.createColoredMessage(plugin.getConfigLoader().getStringMSG(key)));
     }
 
     private void sendMessage(CommandSender sender, String key, String placeholder, String value) {
         String message = plugin.getConfigLoader().getStringMSG(key).replaceAll(placeholder, value);
-        sender.sendMessage(MessageHandler.sendMSG(message));
+        sender.sendMessage(MessageHandler.createColoredMessage(message));
     }
 
     private boolean isRedisBungeeAvailable() {
@@ -177,7 +177,7 @@ public class AdminCMD extends Command {
             sendMessage(player, "Commands.cacheclear.player_msg");
             PlayersMethods.playerRemoveCache(player);
             sendMessage(sender, "Commands.cacheclear.success", "%player%", targetPlayer);
-            player.disconnect(MessageHandler.sendMSG(
+            player.disconnect(MessageHandler.createColoredMessage(
                     plugin.getConfigLoader().getStringMSG("KickMessages.ClearCache")
             ));
         } else {
@@ -241,7 +241,7 @@ public class AdminCMD extends Command {
 
                             ProxiedPlayer player = plugin.getProxy().getPlayer(targetPlayer);
                             if (player != null) {
-                                player.disconnect(MessageHandler.sendMSG(
+                                player.disconnect(MessageHandler.createColoredMessage(
                                         plugin.getConfigLoader().getStringMSG("KickMessages.PremiumKick")
                                 ));
                             }
@@ -327,7 +327,7 @@ public class AdminCMD extends Command {
 
     private void showPlayerIPHelp(CommandSender sender) {
         for (String line : plugin.getConfigLoader().getStringListMSG("HelpPlayerIP")) {
-            sender.sendMessage(MessageHandler.sendMSG(line));
+            sender.sendMessage(MessageHandler.createColoredMessage(line));
         }
     }
 
@@ -397,7 +397,7 @@ public class AdminCMD extends Command {
             String kickMessage = plugin.getConfigLoader()
                     .getStringMSG("KickMessages.unregisterkick")
                     .replaceAll("%admin%", sender.getName());
-            player.disconnect(MessageHandler.sendMSG(kickMessage));
+            player.disconnect(MessageHandler.createColoredMessage(kickMessage));
         }
     }
 
@@ -443,7 +443,7 @@ public class AdminCMD extends Command {
                 String message = plugin.getConfigLoader()
                         .getStringMSG("Commands.forcelogin.success")
                         .replaceAll("%staff_name%", sender.getName());
-                player.sendMessage(MessageHandler.sendMSG(message));
+                player.sendMessage(MessageHandler.createColoredMessage(message));
 
                 plugin.getLoginTimer().getTimers().remove(player.getName());
                 SQL.setPlayerData(player, "valid", "1");
