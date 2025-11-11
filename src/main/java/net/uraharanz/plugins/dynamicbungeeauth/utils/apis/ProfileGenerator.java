@@ -4,288 +4,205 @@ import net.uraharanz.plugins.dynamicbungeeauth.DBABungeePlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.apis.PlayerAPI;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
+/**
+ * @author an5w1r@163.com
+ */
 public class ProfileGenerator {
+
+    private static final String NULL_UUID = "null";
+
     private final DBABungeePlugin plugin;
-    private final boolean MojangE;
-    private final boolean CloudProtectedE;
-    private final boolean MineToolsE;
-    private final boolean BauxiteE;
-    private static int number;
+    private final List<APIProvider> apiProviders;
+    private final AtomicInteger currentApiIndex;
 
     public ProfileGenerator(DBABungeePlugin plugin) {
         this.plugin = plugin;
-        this.MojangE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.Mojang.Enable");
-        this.CloudProtectedE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.CloudProtected.Enable");
-        this.MineToolsE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.MineTools.Enable");
-        this.BauxiteE = plugin.getConfigLoader().getBooleanCFG("APIS.Enable.BauxiteAPI.Enable");
+        this.apiProviders = initializeAPIProviders();
+        this.currentApiIndex = new AtomicInteger(0);
     }
 
-    public void Generator(final String string, final CallbackAPI<UUID> callbackAPI) {
-        this.plugin.getProxy().getScheduler().runAsync(DBABungeePlugin.plugin, () -> {
-            block11: {
-                try {
-                    PlayerAPI playerAPI = this.plugin.getPlayerAPIList().searchRequest(string);
-                    if (playerAPI != null) {
-                        if (playerAPI.getUuid().equals("null")) {
-                            callbackAPI.done(null);
-                        } else {
-                            callbackAPI.done(this.setDashedUUID(playerAPI.getUuid()));
-                        }
-                        break block11;
-                    }
-                    for (int i = 0; i < 4; ++i) {
-                        if (number == 0) {
-                            ++number;
-                            if (!this.MojangE) continue;
-                            ProfileAPIS.Mojang(string, new CallbackAPI<String>(){
+    private List<APIProvider> initializeAPIProviders() {
+        List<APIProvider> providers = new ArrayList<>();
 
-                                @Override
-                                public void done(String string2) {
-                                    if (!string2.equals("null")) {
-                                        PlayerAPI playerAPI = new PlayerAPI(string, string2);
-                                        ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                        callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
-                                    } else {
-                                        ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.Mojang.Fallback"), new CallbackAPI<String>() {
+        if (plugin.getConfigLoader().getBooleanCFG("APIS.Enable.Mojang.Enable")) {
+            int fallback = plugin.getConfigLoader().getIntegerCFG("APIS.Enable.Mojang.Fallback");
+            providers.add(new APIProvider("Mojang", ProfileAPIS::mojang, fallback));
+        }
 
-                                            @Override
-                                            public void done(String string) {
-                                                if (string != null) {
-                                                    PlayerAPI playerAPI = new PlayerAPI(string, string);
-                                                    ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                    callbackAPI.done(ProfileGenerator.this.setDashedUUID(string));
-                                                } else {
-                                                    PlayerAPI playerAPI = new PlayerAPI(string, "null");
-                                                    ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                    callbackAPI.done(null);
-                                                }
-                                            }
+        if (plugin.getConfigLoader().getBooleanCFG("APIS.Enable.CloudProtected.Enable")) {
+            int fallback = plugin.getConfigLoader().getIntegerCFG("APIS.Enable.CloudProtected.Fallback");
+            providers.add(new APIProvider("CloudProtected", ProfileAPIS::cloudProtected, fallback));
+        }
 
-                                            @Override
-                                            public void error(Exception exception) {
-                                            }
-                                        });
-                                    }
-                                }
+        if (plugin.getConfigLoader().getBooleanCFG("APIS.Enable.MineTools.Enable")) {
+            int fallback = plugin.getConfigLoader().getIntegerCFG("APIS.Enable.MineTools.Fallback");
+            providers.add(new APIProvider("MineTools", ProfileAPIS::mineTools, fallback));
+        }
 
-                                @Override
-                                public void error(Exception exception) {
-                                    exception.printStackTrace();
-                                }
-                            });
-                            break;
-                        }
-                        if (number == 1) {
-                            ++number;
-                            if (!this.CloudProtectedE) continue;
-                            ProfileAPIS.CloudProtected(string, new CallbackAPI<String>(){
+        if (plugin.getConfigLoader().getBooleanCFG("APIS.Enable.BauxiteAPI.Enable")) {
+            int fallback = plugin.getConfigLoader().getIntegerCFG("APIS.Enable.BauxiteAPI.Fallback");
+            providers.add(new APIProvider("BauxiteAPI", ProfileAPIS::bauxiteAPI, fallback));
+        }
 
-                                @Override
-                                public void done(String string2) {
-                                    if (!string2.equals("null")) {
-                                        PlayerAPI playerAPI = new PlayerAPI(string, string2);
-                                        ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                        callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
-                                    } else {
-                                        ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.CloudProtected.Fallback"), new CallbackAPI<String>() {
+        return providers;
+    }
 
-                                            @Override
-                                            public void done(String string) {
-                                                if (string != null) {
-                                                    PlayerAPI playerAPI = new PlayerAPI(string, string);
-                                                    ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                    callbackAPI.done(ProfileGenerator.this.setDashedUUID(string));
-                                                } else {
-                                                    PlayerAPI playerAPI = new PlayerAPI(string, "null");
-                                                    ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                    callbackAPI.done(null);
-                                                }
-                                            }
-
-                                            @Override
-                                            public void error(Exception exception) {
-                                            }
-                                        });
-                                    }
-                                }
-
-                                @Override
-                                public void error(Exception exception) {
-                                    exception.printStackTrace();
-                                }
-                            });
-                            break;
-                        }
-                        if (number == 2) {
-                            ++number;
-                            if (!this.MineToolsE) continue;
-                            ProfileAPIS.MineTools(string, new CallbackAPI<String>(){
-
-                                @Override
-                                public void done(String string2) {
-                                    if (!string2.equals("null")) {
-                                        PlayerAPI playerAPI = new PlayerAPI(string, string2);
-                                        ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                        callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
-                                    } else {
-                                        ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.MineTools.Fallback"), new CallbackAPI<String>() {
-
-                                            @Override
-                                            public void done(String string) {
-                                                if (string != null) {
-                                                    PlayerAPI playerAPI = new PlayerAPI(string, string);
-                                                    ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                    callbackAPI.done(ProfileGenerator.this.setDashedUUID(string));
-                                                } else {
-                                                    PlayerAPI playerAPI = new PlayerAPI(string, "null");
-                                                    ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                    callbackAPI.done(null);
-                                                }
-                                            }
-
-                                            @Override
-                                            public void error(Exception exception) {
-                                            }
-                                        });
-                                    }
-                                }
-
-                                @Override
-                                public void error(Exception exception) {
-                                    exception.printStackTrace();
-                                }
-                            });
-                            break;
-                        }
-                        if (number == 3) {
-                            ++number;
-                            if (this.BauxiteE) {
-                                ProfileAPIS.BauxiteAPI(string, new CallbackAPI<String>(){
-
-                                    @Override
-                                    public void done(String string2) {
-                                        if (!string2.equals("null")) {
-                                            PlayerAPI playerAPI = new PlayerAPI(string, string2);
-                                            ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                            callbackAPI.done(ProfileGenerator.this.setDashedUUID(string2));
-                                        } else {
-                                            ProfileGenerator.this.fallbackAPI(string, DBABungeePlugin.plugin.getConfigLoader().getIntegerCFG("APIS.Enable.BauxiteAPI.Fallback"), new CallbackAPI<String>() {
-
-                                                @Override
-                                                public void done(String string) {
-                                                    if (string != null) {
-                                                        PlayerAPI playerAPI = new PlayerAPI(string, string);
-                                                        ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                        callbackAPI.done(ProfileGenerator.this.setDashedUUID(string));
-                                                    } else {
-                                                        PlayerAPI playerAPI = new PlayerAPI(string, "null");
-                                                        ProfileGenerator.this.plugin.getPlayerAPIList().addRequest(playerAPI);
-                                                        callbackAPI.done(null);
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void error(Exception exception) {
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    @Override
-                                    public void error(Exception exception) {
-                                        exception.printStackTrace();
-                                    }
-                                });
-                                break;
-                            }
-                            number = 0;
-                            continue;
-                        }
-                        number = 0;
-                    }
+    public void generator(String playerName, CallbackAPI<UUID> callback) {
+        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
+            try {
+                PlayerAPI cachedAPI = plugin.getPlayerAPIList().searchRequest(playerName);
+                if (cachedAPI != null) {
+                    handleCachedResult(cachedAPI, callback);
+                    return;
                 }
-                catch (Exception exception) {
-                    exception.printStackTrace();
-                }
+
+                queryNextAPI(playerName, callback);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                callback.done(null);
             }
         });
     }
 
-    private UUID setDashedUUID(String string) {
-        if (string != null) {
-            String string2 = string.replace("\"", "");
-            return UUID.fromString(string2.substring(0, 8) + "-" + string2.substring(8, 12) + "-" + string2.substring(12, 16) + "-" + string2.substring(16, 20) + "-" + string2.substring(20, 32));
+    private void handleCachedResult(PlayerAPI cachedAPI, CallbackAPI<UUID> callback) {
+        if (NULL_UUID.equals(cachedAPI.getUuid())) {
+            callback.done(null);
+        } else {
+            callback.done(formatUUID(cachedAPI.getUuid()));
         }
-        return null;
     }
 
-    private void fallbackAPI(String string, int n, final CallbackAPI<String> callbackAPI) {
-        if (n == 1) {
-            ProfileAPIS.Mojang(string, new CallbackAPI<String>(){
+    private void queryNextAPI(String playerName, CallbackAPI<UUID> callback) {
+        if (apiProviders.isEmpty()) {
+            cacheAndReturn(playerName, NULL_UUID, callback);
+            return;
+        }
 
-                @Override
-                public void done(String string) {
-                    if (!string.equals("null")) {
-                        callbackAPI.done(string);
-                    } else {
-                        callbackAPI.done(null);
-                    }
-                }
+        int index = currentApiIndex.getAndUpdate(i -> (i + 1) % apiProviders.size());
+        APIProvider provider = apiProviders.get(index);
 
-                @Override
-                public void error(Exception exception) {
+        provider.query(playerName, new CallbackAPI<String>() {
+            @Override
+            public void done(String uuidString) {
+                if (uuidString != null && !NULL_UUID.equals(uuidString)) {
+                    cacheAndReturn(playerName, uuidString, callback);
+                } else {
+                    queryFallbackAPI(playerName, provider.getFallbackIndex(), callback);
                 }
-            });
-        } else if (n == 2) {
-            ProfileAPIS.CloudProtected(string, new CallbackAPI<String>(){
+            }
 
-                @Override
-                public void done(String string) {
-                    if (!string.equals("null")) {
-                        callbackAPI.done(string);
-                    } else {
-                        callbackAPI.done(null);
-                    }
-                }
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+                queryFallbackAPI(playerName, provider.getFallbackIndex(), callback);
+            }
+        });
+    }
 
-                @Override
-                public void error(Exception exception) {
-                }
-            });
-        } else if (n == 3) {
-            ProfileAPIS.MineTools(string, new CallbackAPI<String>(){
+    private void queryFallbackAPI(String playerName, int fallbackIndex, CallbackAPI<UUID> callback) {
+        if (fallbackIndex <= 0 || fallbackIndex > 4) {
+            cacheAndReturn(playerName, NULL_UUID, callback);
+            return;
+        }
 
-                @Override
-                public void done(String string) {
-                    if (!string.equals("null")) {
-                        callbackAPI.done(string);
-                    } else {
-                        callbackAPI.done(null);
-                    }
-                }
+        BiConsumer<String, CallbackAPI<String>> fallbackAPI = getFallbackAPI(fallbackIndex);
+        if (fallbackAPI == null) {
+            cacheAndReturn(playerName, NULL_UUID, callback);
+            return;
+        }
 
-                @Override
-                public void error(Exception exception) {
+        fallbackAPI.accept(playerName, new CallbackAPI<String>() {
+            @Override
+            public void done(String uuidString) {
+                if (uuidString != null && !NULL_UUID.equals(uuidString)) {
+                    cacheAndReturn(playerName, uuidString, callback);
+                } else {
+                    cacheAndReturn(playerName, NULL_UUID, callback);
                 }
-            });
-        } else if (n == 4) {
-            ProfileAPIS.BauxiteAPI(string, new CallbackAPI<String>(){
+            }
 
-                @Override
-                public void done(String string) {
-                    if (!string.equals("null")) {
-                        callbackAPI.done(string);
-                    } else {
-                        callbackAPI.done(null);
-                    }
-                }
+            @Override
+            public void error(Exception e) {
+                cacheAndReturn(playerName, NULL_UUID, callback);
+            }
+        });
+    }
 
-                @Override
-                public void error(Exception exception) {
-                }
-            });
+    private BiConsumer<String, CallbackAPI<String>> getFallbackAPI(int index) {
+        switch (index) {
+            case 1:
+                return ProfileAPIS::mojang;
+            case 2:
+                return ProfileAPIS::cloudProtected;
+            case 3:
+                return ProfileAPIS::mineTools;
+            case 4:
+                return ProfileAPIS::bauxiteAPI;
+            default:
+                return null;
+        }
+    }
+
+    private void cacheAndReturn(String playerName, String uuidString, CallbackAPI<UUID> callback) {
+        PlayerAPI playerAPI = new PlayerAPI(playerName, uuidString);
+        plugin.getPlayerAPIList().addRequest(playerAPI);
+
+        if (NULL_UUID.equals(uuidString)) {
+            callback.done(null);
+        } else {
+            callback.done(formatUUID(uuidString));
+        }
+    }
+
+    private UUID formatUUID(String uuidString) {
+        if (uuidString == null || uuidString.length() < 32) {
+            return null;
+        }
+
+        try {
+            String cleaned = uuidString.replace("\"", "");
+
+            if (cleaned.contains("-")) {
+                return UUID.fromString(cleaned);
+            }
+
+            String formatted = String.format("%s-%s-%s-%s-%s",
+                    cleaned.substring(0, 8),
+                    cleaned.substring(8, 12),
+                    cleaned.substring(12, 16),
+                    cleaned.substring(16, 20),
+                    cleaned.substring(20, 32)
+            );
+
+            return UUID.fromString(formatted);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static class APIProvider {
+        private final BiConsumer<String, CallbackAPI<String>> queryMethod;
+        private final int fallbackIndex;
+
+        APIProvider(String name, BiConsumer<String, CallbackAPI<String>> queryMethod, int fallbackIndex) {
+            this.queryMethod = queryMethod;
+            this.fallbackIndex = fallbackIndex;
+        }
+
+        void query(String playerName, CallbackAPI<String> callback) {
+            queryMethod.accept(playerName, callback);
+        }
+
+        int getFallbackIndex() {
+            return fallbackIndex;
         }
     }
 }

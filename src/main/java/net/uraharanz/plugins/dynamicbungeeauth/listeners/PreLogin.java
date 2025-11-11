@@ -287,7 +287,7 @@ public class PreLogin implements Listener {
     }
 
     private void checkMojangAndSetMode(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
-        plugin.getProfileGenerator().Generator(playerName, new CallbackAPI<UUID>() {
+        plugin.getProfileGenerator().generator(playerName, new CallbackAPI<UUID>() {
             @Override
             public void done(UUID uuid) {
                 if (uuid != null) {

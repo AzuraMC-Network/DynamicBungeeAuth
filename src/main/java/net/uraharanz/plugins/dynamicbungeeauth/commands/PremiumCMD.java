@@ -71,7 +71,7 @@ public class PremiumCMD extends Command {
     }
 
     private void verifyMojangAccount(final ProxiedPlayer player) {
-        plugin.getProfileGenerator().Generator(player.getName(), new CallbackAPI<UUID>() {
+        plugin.getProfileGenerator().generator(player.getName(), new CallbackAPI<UUID>() {
             @Override
             public void done(UUID uuid) {
                 if (uuid == null) {
