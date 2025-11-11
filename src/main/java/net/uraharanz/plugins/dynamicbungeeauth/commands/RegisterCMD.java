@@ -1,6 +1,5 @@
 package net.uraharanz.plugins.dynamicbungeeauth.commands;
 
-import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -13,139 +12,244 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.password.HashMethods;
 
-public class RegisterCMD
-extends Command {
-    private main plugin;
-    private int minPass;
-    private int maxPass;
-    private boolean Captcha;
+import java.util.concurrent.TimeUnit;
 
-    public RegisterCMD(main main2) {
+/**
+ * @author an5w1r@163.com
+ */
+public class RegisterCMD extends Command {
+    private final main plugin;
+    private final int minPasswordLength;
+    private final int maxPasswordLength;
+    private final boolean captchaEnabled;
+
+    public RegisterCMD(main plugin) {
         super("register", null, "reg");
-        this.plugin = main2;
-        this.maxPass = main2.getConfigLoader().getIntegerCFG("Options.MaxPasswordLength");
-        this.minPass = main2.getConfigLoader().getIntegerCFG("Options.MinPasswordLength");
-        this.Captcha = main.plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
+        this.plugin = plugin;
+        this.maxPasswordLength = plugin.getConfigLoader().getIntegerCFG("Options.MaxPasswordLength");
+        this.minPasswordLength = plugin.getConfigLoader().getIntegerCFG("Options.MinPasswordLength");
+        this.captchaEnabled = plugin.getConfigLoader().getBooleanCFG("Options.Captcha");
     }
 
-    public void execute(CommandSender commandSender, final String[] stringArray) {
-        this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
-            if (commandSender instanceof ProxiedPlayer) {
-                final ProxiedPlayer proxiedPlayer = (ProxiedPlayer)commandSender;
-                SQL.isPlayerDB(proxiedPlayer, new CallbackSQL<Boolean>(){
+    @Override
+    public void execute(CommandSender sender, final String[] args) {
+        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
+            if (!(sender instanceof ProxiedPlayer)) {
+                return;
+            }
 
-                    /*
-                     * Enabled aggressive block sorting
-                     */
-                    @Override
-                    public void done(Boolean bl) {
-                        if (bl) {
-                            proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.exist")));
-                            return;
-                        }
-                        if (RegisterCMD.this.Captcha) {
-                            PlayerCache playerCache = main.plugin.getPlayerCacheList().searchCache(proxiedPlayer.getName());
-                            if (stringArray.length < 2) {
-                                proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.wrong").replaceAll("%captcha%", playerCache.getCaptcha())));
-                                return;
-                            }
-                            if (stringArray.length != 3) {
-                                proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.non_captcha").replaceAll("%captcha%", playerCache.getCaptcha())));
-                                return;
-                            }
-                            if (!stringArray[2].equals(playerCache.getCaptcha())) {
-                                proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.wrong_captcha").replaceAll("%captcha%", playerCache.getCaptcha())));
-                                return;
-                            }
-                        } else if (stringArray.length < 2) {
-                            proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.wrong")));
-                            return;
-                        }
-                        if (!stringArray[0].equals(stringArray[1])) {
-                            proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.wrong")));
-                            return;
-                        }
-                        boolean bl2 = true;
-                        for (String string : RegisterCMD.this.plugin.getConfigLoader().getStringListCFG("BannedPasswords")) {
-                            if (!stringArray[0].equals(string)) continue;
-                            proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.bannedpw")));
-                            bl2 = false;
-                            break;
-                        }
-                        if (stringArray[0].length() < RegisterCMD.this.minPass) {
-                            proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.to_short")));
-                            bl2 = false;
-                        }
-                        if (stringArray[0].length() > RegisterCMD.this.maxPass) {
-                            proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.to_long")));
-                            return;
-                        }
-                        if (!bl2) {
-                            return;
-                        }
-                        PlayersMethods.verifyIPRegister(proxiedPlayer, new CallbackSQL<Boolean>(){
+            final ProxiedPlayer player = (ProxiedPlayer) sender;
+            processRegistration(player, args);
+        });
+    }
 
-                            @Override
-                            public void done(Boolean bl) {
-                                if (bl) {
-                                    proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.registering")));
-                                    SQL.PlayerSQL(proxiedPlayer, 0, 1, false, new CallbackSQL<Boolean>(){
+    private void processRegistration(final ProxiedPlayer player, final String[] args) {
+        SQL.isPlayerDB(player, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean isRegistered) {
+                if (isRegistered) {
+                    sendMessage(player, "Commands.register.exist");
+                    return;
+                }
 
-                                        @Override
-                                        public void done(Boolean bl) {
-                                            RegisterCMD.this.plugin.getProxy().getScheduler().schedule(RegisterCMD.this.plugin, () -> SQL.getPlayerDataS(proxiedPlayer, "salt", new CallbackSQL<String>(){
+                validateRegistrationInput(player, args);
+            }
 
-                                                @Override
-                                                public void done(String string) {
-                                                    String string2 = HashMethods.HashPassword(proxiedPlayer, stringArray[0], string);
-                                                    SQL.setPlayerData(proxiedPlayer, "password", string2);
-                                                    proxiedPlayer.sendMessage(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("Commands.register.success")));
-                                                    RegisterCMD.this.plugin.getSpamPlayerList().removePlayer(proxiedPlayer.getName());
-                                                    PlayersMethods.CleanTitles(proxiedPlayer);
-                                                    PlayersMethods.asyncGet(proxiedPlayer, new CallbackSQL<Boolean>(){
-
-                                                        @Override
-                                                        public void done(Boolean bl1) {
-                                                            if (bl1) {
-                                                                PlayersMethods.setValidCache(proxiedPlayer);
-                                                                ServerMethods.sendLobbyServer(proxiedPlayer);
-                                                                SQL.setPlayerData(proxiedPlayer, "lwlogged", "1");
-                                                                PlayersMethods.updatePlaying(proxiedPlayer.getName(), true);
-                                                            }
-                                                        }
-
-                                                        @Override
-                                                        public void error(Exception exception) {
-                                                        }
-                                                    });
-                                                }
-
-                                                @Override
-                                                public void error(Exception exception) {
-                                                }
-                                            }), 1L, TimeUnit.SECONDS);
-                                        }
-
-                                        @Override
-                                        public void error(Exception exception) {
-                                        }
-                                    });
-                                    return;
-                                }
-                                proxiedPlayer.disconnect(MessageHandler.sendMSG(RegisterCMD.this.plugin.getConfigLoader().getStringMSG("KickMessages.MaxAccountsIP")));
-                            }
-
-                            @Override
-                            public void error(Exception exception) {
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void error(Exception exception) {
-                    }
-                });
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
             }
         });
+    }
+
+    private void validateRegistrationInput(ProxiedPlayer player, String[] args) {
+        PlayerCache cache = plugin.getPlayerCacheList().searchCache(player.getName());
+
+        if (!validateCommandFormat(player, args, cache)) {
+            return;
+        }
+
+        if (captchaEnabled && !validateCaptcha(player, args, cache)) {
+            return;
+        }
+
+        if (!validatePassword(player, args)) {
+            return;
+        }
+
+        executeRegistration(player, args[0]);
+    }
+
+    private boolean validateCommandFormat(ProxiedPlayer player, String[] args, PlayerCache cache) {
+        if (captchaEnabled) {
+            if (args.length < 2) {
+                sendMessageWithCaptcha(player, "Commands.register.wrong", cache);
+                return false;
+            }
+            if (args.length != 3) {
+                sendMessageWithCaptcha(player, "Commands.register.non_captcha", cache);
+                return false;
+            }
+        } else {
+            if (args.length < 2) {
+                sendMessage(player, "Commands.register.wrong");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean validateCaptcha(ProxiedPlayer player, String[] args, PlayerCache cache) {
+        String inputCaptcha = args[2];
+        String expectedCaptcha = cache.getCaptcha();
+
+        if (!inputCaptcha.equals(expectedCaptcha)) {
+            sendMessageWithCaptcha(player, "Commands.register.wrong_captcha", cache);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validatePassword(ProxiedPlayer player, String[] args) {
+        String password = args[0];
+        String confirmPassword = args[1];
+
+        if (!password.equals(confirmPassword)) {
+            sendMessage(player, "Commands.register.wrong");
+            return false;
+        }
+
+        if (password.length() < minPasswordLength) {
+            sendMessage(player, "Commands.register.to_short");
+            return false;
+        }
+
+        if (password.length() > maxPasswordLength) {
+            sendMessage(player, "Commands.register.to_long");
+            return false;
+        }
+
+        if (isBannedPassword(password)) {
+            sendMessage(player, "Commands.register.bannedpw");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isBannedPassword(String password) {
+        for (String bannedPassword : plugin.getConfigLoader().getStringListCFG("BannedPasswords")) {
+            if (password.equals(bannedPassword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void executeRegistration(final ProxiedPlayer player, final String password) {
+        PlayersMethods.verifyIPRegister(player, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean isWithinLimit) {
+                if (!isWithinLimit) {
+                    kickPlayerForIPLimit(player);
+                    return;
+                }
+
+                performRegistration(player, password);
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void kickPlayerForIPLimit(ProxiedPlayer player) {
+        String kickMessage = plugin.getConfigLoader().getStringMSG("KickMessages.MaxAccountsIP");
+        player.disconnect(MessageHandler.sendMSG(kickMessage));
+    }
+
+    private void performRegistration(final ProxiedPlayer player, final String password) {
+        sendMessage(player, "Commands.register.registering");
+
+        SQL.PlayerSQL(player, 0, 1, false, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean success) {
+                if (success) {
+                    schedulePasswordHashing(player, password);
+                }
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void schedulePasswordHashing(final ProxiedPlayer player, final String password) {
+        plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            hashAndSavePassword(player, password);
+        }, 1L, TimeUnit.SECONDS);
+    }
+
+    private void hashAndSavePassword(final ProxiedPlayer player, final String password) {
+        SQL.getPlayerDataS(player, "salt", new CallbackSQL<String>() {
+            @Override
+            public void done(String salt) {
+                String hashedPassword = HashMethods.HashPassword(player, password, salt);
+                SQL.setPlayerData(player, "password", hashedPassword);
+
+                completeRegistration(player);
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void completeRegistration(final ProxiedPlayer player) {
+        sendMessage(player, "Commands.register.success");
+
+        plugin.getSpamPlayerList().removePlayer(player.getName());
+        PlayersMethods.CleanTitles(player);
+
+        performAutoLogin(player);
+    }
+
+    private void performAutoLogin(final ProxiedPlayer player) {
+        PlayersMethods.asyncGet(player, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean success) {
+                if (success) {
+                    PlayersMethods.setValidCache(player);
+
+                    ServerMethods.sendLobbyServer(player);
+
+                    SQL.setPlayerData(player, "lwlogged", "1");
+                    PlayersMethods.updatePlaying(player.getName(), true);
+                }
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void sendMessage(ProxiedPlayer player, String messageKey) {
+        String message = plugin.getConfigLoader().getStringMSG(messageKey);
+        player.sendMessage(MessageHandler.sendMSG(message));
+    }
+
+    private void sendMessageWithCaptcha(ProxiedPlayer player, String messageKey, PlayerCache cache) {
+        String message = plugin.getConfigLoader()
+                .getStringMSG(messageKey)
+                .replaceAll("%captcha%", cache.getCaptcha());
+        player.sendMessage(MessageHandler.sendMSG(message));
     }
 }
