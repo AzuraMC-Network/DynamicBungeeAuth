@@ -9,9 +9,9 @@ public class PlayerAPI {
     private String name;
     private String uuid;
 
-    public PlayerAPI(String string, String string2) {
-        this.name = string;
-        this.uuid = string2;
+    public PlayerAPI(String name, String uuid) {
+        this.name = name;
+        this.uuid = uuid;
     }
 
 }

@@ -1,42 +1,44 @@
 package net.uraharanz.plugins.dynamicbungeeauth.cache.apis;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.uraharanz.plugins.dynamicbungeeauth.main;
 
 public class PlayerAPIList {
-    private main plugin;
-    private ArrayList<PlayerAPI> player;
-    private int Time;
+    private final main plugin;
+    private final List<PlayerAPI> requests;
+    private final int cleanIntervalMinutes;
 
-    public PlayerAPIList(main main2) {
-        this.plugin = main2;
-        this.player = new ArrayList<>();
-        this.Time = main2.getConfigLoader().getIntegerCFG("Timers.CleanRequest");
+    public PlayerAPIList(main plugin) {
+        this.plugin = plugin;
+        this.requests = new ArrayList<>();
+        this.cleanIntervalMinutes = plugin.getConfigLoader().getIntegerCFG("Timers.CleanRequest");
     }
 
     public void addRequest(PlayerAPI playerAPI) {
         if (this.searchRequest(playerAPI.getName()) == null) {
-            this.player.add(playerAPI);
+            this.requests.add(playerAPI);
         }
     }
 
-    public PlayerAPI searchRequest(String string) {
-        if (string != null) {
-            for (PlayerAPI playerAPI : this.player) {
-                if (!playerAPI.getName().equals(string)) continue;
-                return playerAPI;
+    public PlayerAPI searchRequest(String playerName) {
+        if (playerName != null) {
+            for (PlayerAPI playerAPI : this.requests) {
+                if (playerAPI.getName().equals(playerName)) {
+                    return playerAPI;
+                }
             }
         }
         return null;
     }
 
-    public boolean removeRequest(String string) {
-        PlayerAPI playerAPI = this.searchRequest(string);
+    public boolean removeRequest(String playerName) {
+        PlayerAPI playerAPI = this.searchRequest(playerName);
         if (playerAPI != null) {
-            this.player.remove(playerAPI);
+            this.requests.remove(playerAPI);
             return true;
         }
         return false;
@@ -44,13 +46,14 @@ public class PlayerAPIList {
 
     public void cleanRequest() {
         this.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
-            ArrayList<PlayerAPI> arrayList = new ArrayList<>();
-            for (PlayerAPI playerAPI : this.player) {
+            List<PlayerAPI> expiredRequests = new ArrayList<>();
+            for (PlayerAPI playerAPI : this.requests) {
                 ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(playerAPI.getName());
-                if (proxiedPlayer != null) continue;
-                arrayList.add(playerAPI);
+                if (proxiedPlayer == null) {
+                    expiredRequests.add(playerAPI);
+                }
             }
-            this.player.removeAll(arrayList);
-        }, 1L, this.Time, TimeUnit.MINUTES);
+            this.requests.removeAll(expiredRequests);
+        }, 1L, this.cleanIntervalMinutes, TimeUnit.MINUTES);
     }
 }
