@@ -9,7 +9,11 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
 import java.util.List;
 
+/**
+ * @author an5w1r@163.com
+ */
 public class ServerMethods {
+
     private static final List<String> authList = DBABungeePlugin.plugin.getConfigLoader().getStringListCFG("Servers.Auth");
     private static final String authError = DBABungeePlugin.plugin.getConfigLoader().getStringCFG("Servers.AuthError");
     private static final List<String> lobbyList = DBABungeePlugin.plugin.getConfigLoader().getStringListCFG("Servers.Lobby");
@@ -17,104 +21,126 @@ public class ServerMethods {
     private static final boolean connectLastServer = DBABungeePlugin.plugin.getConfigLoader().getBooleanCFG("Options.ConnectUserLastServer");
 
     public static ServerInfo getAuth() {
-        if (!authList.isEmpty()) {
-            ServerInfo serverInfo = null;
-            for (String string : authList) {
-                ServerInfo serverInfo2 = DBABungeePlugin.plugin.getProxy().getServers().get(string);
-                if (serverInfo2 == null) {
-                    ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cIf you are seeing this message it is because your configuration in the Lobby/Auth section is wrong because server: " + string + " do not exist in the Bungee configuration.");
-                    ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cCheck this image for reference: https://gyazo.com/b09c11a43d47f4011536bcb1a1d1e787");
-                    return null;
-                }
-                if (serverInfo == null) {
-                    serverInfo = serverInfo2;
-                }
-                if (serverInfo2.getPlayers().size() >= serverInfo.getPlayers().size()) continue;
-                serverInfo = serverInfo2;
-            }
-            return serverInfo;
-        }
-        if (!authError.isEmpty()) {
-            return DBABungeePlugin.plugin.getProxy().getServerInfo(authError);
-        }
-        return null;
+        return getServerWithLoadBalance(authList, authError, "Auth");
     }
 
     public static ServerInfo getLobby() {
-        if (!lobbyList.isEmpty()) {
-            ServerInfo serverInfo = null;
-            for (String string : lobbyList) {
-                ServerInfo serverInfo2 = DBABungeePlugin.plugin.getProxy().getServers().get(string);
-                if (serverInfo2 == null) {
-                    ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cIf you are seeing this message it is because your configuration in the Lobby/Auth section is wrong because server: " + string + " do not exist in the Bungee configuration.");
-                    ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cCheck this image for reference: https://gyazo.com/b09c11a43d47f4011536bcb1a1d1e787");
-                    return null;
-                }
-                if (serverInfo == null) {
-                    serverInfo = serverInfo2;
-                }
-                if (serverInfo2.getPlayers().size() >= serverInfo.getPlayers().size()) continue;
-                serverInfo = serverInfo2;
-            }
-            return serverInfo;
-        }
-        if (!lobbyError.isEmpty()) {
-            return DBABungeePlugin.plugin.getProxy().getServerInfo(lobbyError);
-        }
-        return null;
+        return getServerWithLoadBalance(lobbyList, lobbyError, "Lobby");
     }
 
-    public static void sendLobbyServer(final ProxiedPlayer proxiedPlayer) {
+    private static ServerInfo getServerWithLoadBalance(List<String> serverList, String fallbackServerName, String serverType) {
+        if (serverList.isEmpty()) {
+            return getFallbackServer(fallbackServerName);
+        }
+
+        ServerInfo leastPopulatedServer = null;
+
+        for (String serverName : serverList) {
+            ServerInfo server = DBABungeePlugin.plugin.getProxy().getServers().get(serverName);
+
+            if (server == null) {
+                logServerConfigError(serverName);
+                return null;
+            }
+
+            if (leastPopulatedServer == null || server.getPlayers().size() < leastPopulatedServer.getPlayers().size()) {
+                leastPopulatedServer = server;
+            }
+        }
+
+        return leastPopulatedServer;
+    }
+
+    private static ServerInfo getFallbackServer(String fallbackServerName) {
+        if (fallbackServerName == null || fallbackServerName.isEmpty()) {
+            return null;
+        }
+        return DBABungeePlugin.plugin.getProxy().getServerInfo(fallbackServerName);
+    }
+
+    private static void logServerConfigError(String serverName) {
+        ProxyServer.getInstance().getLogger().warning(String.format(
+                "§a§lDBA §8| §cIf you are seeing this message it is because your configuration in " +
+                        "the Lobby/Auth section is wrong because server: %s do not exist in the Bungee configuration.", serverName));
+        ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §cCheck this image for reference: https://gyazo.com/b09c11a43d47f4011536bcb1a1d1e787");
+    }
+
+    public static void sendLobbyServer(ProxiedPlayer player) {
         if (connectLastServer) {
-            SQL.getPlayerDataS(proxiedPlayer, "server", new CallbackSQL<String>(){
-
-                @Override
-                public void done(String string) {
-                    if (string != null && !string.isEmpty()) {
-                        ServerInfo serverInfo = DBABungeePlugin.plugin.getProxy().getServerInfo(string);
-                        if (authList.contains(string) || authError.equals(string)) {
-                            ServerInfo serverInfo2 = ServerMethods.getLobby();
-                            if (serverInfo2 != null) {
-                                ServerMethods.connectToLobby(proxiedPlayer, serverInfo2);
-                            }
-                        } else if (serverInfo != null) {
-                            proxiedPlayer.connect(serverInfo);
-                        } else {
-                            ServerInfo serverInfo3 = ServerMethods.getLobby();
-                            if (serverInfo3 != null) {
-                                ServerMethods.connectToLobby(proxiedPlayer, serverInfo3);
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void error(Exception exception) {
-                }
-            });
+            connectToLastServer(player);
         } else {
-            ServerInfo serverInfo = ServerMethods.getLobby();
-            if (serverInfo != null) {
-                ServerMethods.connectToLobby(proxiedPlayer, serverInfo);
-            }
+            connectToDefaultLobby(player);
         }
     }
 
-    public static void connectToLobby(ProxiedPlayer proxiedPlayer, ServerInfo serverInfo) {
-        if (proxiedPlayer.getServer() != null) {
-            if (!lobbyList.isEmpty()) {
-                if (!lobbyList.contains(proxiedPlayer.getServer().getInfo().getName())) {
-                    proxiedPlayer.connect(serverInfo);
+    private static void connectToLastServer(ProxiedPlayer player) {
+        SQL.getPlayerDataS(player, "server", new CallbackSQL<String>() {
+            @Override
+            public void done(String lastServerName) {
+                if (lastServerName == null || lastServerName.isEmpty()) {
+                    return;
                 }
-            } else if (!proxiedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
-                proxiedPlayer.connect(serverInfo);
+
+                if (isAuthServer(lastServerName)) {
+                    connectToDefaultLobby(player);
+                    return;
+                }
+
+                ServerInfo lastServer = DBABungeePlugin.plugin.getProxy().getServerInfo(lastServerName);
+                if (lastServer != null) {
+                    player.connect(lastServer);
+                } else {
+                    connectToDefaultLobby(player);
+                }
             }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static void connectToDefaultLobby(ProxiedPlayer player) {
+        ServerInfo lobbyServer = getLobby();
+        if (lobbyServer != null) {
+            connectToLobby(player, lobbyServer);
         }
     }
 
-    public static void swapLobby(ProxiedPlayer proxiedPlayer, ServerInfo serverInfo) {
-        if (!proxiedPlayer.getServer().getInfo().getName().equals(serverInfo.getName())) {
-            proxiedPlayer.connect(serverInfo);
+    private static boolean isAuthServer(String serverName) {
+        return authList.contains(serverName) || authError.equals(serverName);
+    }
+
+    public static void connectToLobby(ProxiedPlayer player, ServerInfo lobbyServer) {
+        if (player.getServer() == null) {
+            return;
+        }
+
+        String currentServerName = player.getServer().getInfo().getName();
+
+        if (isInLobby(currentServerName, lobbyServer.getName())) {
+            return;
+        }
+
+        player.connect(lobbyServer);
+    }
+
+    private static boolean isInLobby(String currentServerName, String targetLobbyName) {
+        if (!lobbyList.isEmpty()) {
+            return lobbyList.contains(currentServerName);
+        }
+        return currentServerName.equals(targetLobbyName);
+    }
+
+    public static void swapLobby(ProxiedPlayer player, ServerInfo lobbyServer) {
+        if (player.getServer() == null) {
+            return;
+        }
+
+        String currentServerName = player.getServer().getInfo().getName();
+        if (!currentServerName.equals(lobbyServer.getName())) {
+            player.connect(lobbyServer);
         }
     }
 }
