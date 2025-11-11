@@ -8,30 +8,34 @@ import net.md_5.bungee.api.plugin.Command;
 import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.ServerMethods;
 
-public class LobbyCMD
-extends Command {
-    private DBAPlugin plugin;
+/**
+ * @author an5w1r@163.com
+ */
+public class LobbyCMD extends Command {
+    private final DBAPlugin plugin;
 
     public LobbyCMD(DBAPlugin plugin) {
-        super("lobby", "auth.lobby", "lobby", "hub");
+        super("lobby", "auth.lobby", "hub");
         this.plugin = plugin;
     }
 
-    public LobbyCMD(DBAPlugin plugin, Boolean bl) {
-        super("lobby", "auth.lobby", "lobby", "hub", "spawn");
+    public LobbyCMD(DBAPlugin plugin, Boolean includeSpawnAlias) {
+        super("lobby", "auth.lobby", "hub", "spawn");
         this.plugin = plugin;
     }
 
-    public void execute(CommandSender commandSender, String[] stringArray) {
+    @Override
+    public void execute(CommandSender commandSender, String[] args) {
+        if (!(commandSender instanceof ProxiedPlayer)) {
+            ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §cThis command is only for users.");
+            return;
+        }
+
+        ProxiedPlayer player = (ProxiedPlayer) commandSender;
         this.plugin.getProxy().getScheduler().runAsync(this.plugin, () -> {
-            if (commandSender instanceof ProxiedPlayer) {
-                ProxiedPlayer proxiedPlayer = (ProxiedPlayer)commandSender;
-                ServerInfo serverInfo = ServerMethods.getLobby();
-                if (serverInfo != null) {
-                    ServerMethods.swapLobby(proxiedPlayer, serverInfo);
-                }
-            } else {
-                ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §cThis command is only for users.");
+            ServerInfo lobby = ServerMethods.getLobby();
+            if (lobby != null) {
+                ServerMethods.swapLobby(player, lobby);
             }
         });
     }
