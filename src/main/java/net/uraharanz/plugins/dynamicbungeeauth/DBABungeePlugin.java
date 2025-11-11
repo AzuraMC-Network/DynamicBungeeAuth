@@ -11,7 +11,7 @@ import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerDataList;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.spam.SpamPlayerList;
 import net.uraharanz.plugins.dynamicbungeeauth.commands.*;
-import net.uraharanz.plugins.dynamicbungeeauth.listeners.loader.LoadListeners;
+import net.uraharanz.plugins.dynamicbungeeauth.listeners.*;
 import net.uraharanz.plugins.dynamicbungeeauth.loader.ConfigLoader;
 import net.uraharanz.plugins.dynamicbungeeauth.timers.LoginTimer;
 import net.uraharanz.plugins.dynamicbungeeauth.timers.MaxLogin;
@@ -25,38 +25,82 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.HashMap;
 
+/**
+ * @author an5w1r@163.com
+ */
 @Getter
 @Setter
-public class DBABungeePlugin
-extends Plugin {
+public class DBABungeePlugin extends Plugin {
+
     public static DBABungeePlugin plugin;
+
     private Files files;
-    private LoadListeners listeners;
+    private ConfigLoader configLoader;
+
     private PlayerAPIList playerAPIList;
     private PlayerDataList playerDataList;
     private PlayerCacheList playerCacheList;
-    private ProfileGenerator profileGenerator;
+    private SpamPlayerList spamPlayerList;
     private FixList fixList;
+
+    private ProfileGenerator profileGenerator;
+
     private RegisterTimer registerTimer;
     private LoginTimer loginTimer;
     private MaxLogin maxLogin;
-    private SpamPlayerList spamPlayerList;
-    private ConfigLoader configLoader;
+
     private FloodgateApi floodgateApi;
+
     public static HashMap<String, Boolean> serverLobby;
     public static HashMap<String, Boolean> serverAuth;
 
+    @Override
     public void onEnable() {
         plugin = this;
+        initializeServerMaps();
+
+        logInfo("Initializing plugin...");
+
+        loadConfigurations();
+        connectDatabase();
+        initializeCaches();
+        loadListeners();
+        registerCommands();
+        initializeTimers();
+        initializeServerState();
+        importDataIfEnabled();
+        registerPluginChannels();
+        initializeFloodGate();
+
+        logInfo("Plugin enabled successfully!");
+    }
+
+    @Override
+    public void onDisable() {
+        logInfo("Shutting down...");
+        PoolManager.closeConnection();
+        logInfo("Database connections closed.");
+    }
+
+    private void initializeServerMaps() {
         serverLobby = new HashMap<>();
         serverAuth = new HashMap<>();
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eGenerating and loading Config Files.");
-        this.setFiles(new Files(this));
-        this.files.createConfigs();
-        this.files.createMessages();
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eConfig Files Loaded.");
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eConnecting to the DB Server.");
-        this.setConfigLoader(new ConfigLoader(plugin));
+    }
+
+    private void loadConfigurations() {
+        logInfo("Loading configuration files...");
+
+        setFiles(new Files(this));
+        files.createConfigs();
+        files.createMessages();
+        setConfigLoader(new ConfigLoader(plugin));
+
+        logInfo("Configuration files loaded.");
+    }
+
+    private void connectDatabase() {
+        logInfo("Connecting to database...");
+
         PoolManager.connectDB(2);
         PoolManager.createPlayerTable();
         PoolManager.createIPTable();
@@ -64,67 +108,133 @@ extends Plugin {
         PoolManager.alterTable();
         PoolManager.resetValues();
         PoolManager.createIndex();
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eLoading Cache.");
-        this.setPlayerAPIList(new PlayerAPIList(this));
-        this.getPlayerAPIList().cleanRequest();
-        this.setPlayerDataList(new PlayerDataList(this));
-        this.getPlayerDataList().cleanData();
-        this.setPlayerCacheList(new PlayerCacheList(this));
-        this.getPlayerCacheList().cleanCached();
-        this.setFixList(new FixList(this));
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eCache Loaded.");
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eLoading Listeners.");
-        this.setListeners(new LoadListeners(this));
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eListeners Loaded.");
-        this.setProfileGenerator(new ProfileGenerator(this));
-        this.Commands();
-        this.setRegisterTimer(new RegisterTimer(this));
-        this.setLoginTimer(new LoginTimer(this));
-        this.setMaxLogin(new MaxLogin(this));
-        this.getMaxLogin().resetCountTimer();
-        this.setSpamPlayerList(new SpamPlayerList(this));
+
+        logInfo("Database connected and initialized.");
+    }
+
+    private void initializeCaches() {
+        logInfo("Loading caches...");
+
+        setPlayerAPIList(new PlayerAPIList(this));
+        playerAPIList.cleanRequest();
+
+        setPlayerDataList(new PlayerDataList(this));
+        playerDataList.cleanData();
+
+        setPlayerCacheList(new PlayerCacheList(this));
+        playerCacheList.cleanCached();
+
+        setFixList(new FixList(this));
+
+        logInfo("Caches loaded.");
+    }
+
+    private void loadListeners() {
+        logInfo("Loading listeners...");
+        plugin.getProxy().getPluginManager().registerListener(plugin, new PostLogin(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new PreLogin(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new LeaveListener(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new ChatListener(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new SwitchListener(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new ServerConnectedListener(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new PluginChanelListenerB(plugin));
+        plugin.getProxy().getPluginManager().registerListener(plugin, new Login(plugin));
+        logInfo("Listeners loaded.");
+    }
+
+    private void registerCommands() {
+        logInfo("Registering commands...");
+
+        getProxy().getPluginManager().registerCommand(this, new PremiumCMD(this));
+        getProxy().getPluginManager().registerCommand(this, new CrackedCMD(this));
+        getProxy().getPluginManager().registerCommand(this, new RegisterCMD(this));
+        getProxy().getPluginManager().registerCommand(this, new LoginCMD(this));
+        getProxy().getPluginManager().registerCommand(this, new AdminCMD(this));
+        getProxy().getPluginManager().registerCommand(this, new ChangeCMD(this));
+        getProxy().getPluginManager().registerCommand(this, new LogoutCMD(this));
+
+        registerLobbyCommand();
+
+        logInfo("Commands registered.");
+    }
+
+    private void registerLobbyCommand() {
+        if (!configLoader.getBooleanCFG("Options.LobbyCommands")) {
+            return;
+        }
+
+        boolean isSpawnMode = configLoader.getBooleanCFG("Options.LobbyCommandsSpawn");
+        LobbyCMD lobbyCommand = isSpawnMode ? new LobbyCMD(this, true) : new LobbyCMD(this);
+
+        getProxy().getPluginManager().registerCommand(this, lobbyCommand);
+    }
+
+    private void initializeTimers() {
+        logInfo("Initializing timers...");
+
+        setProfileGenerator(new ProfileGenerator(this));
+        setRegisterTimer(new RegisterTimer(this));
+        setLoginTimer(new LoginTimer(this));
+        setMaxLogin(new MaxLogin(this));
+        maxLogin.resetCountTimer();
+        setSpamPlayerList(new SpamPlayerList(this));
+
+        logInfo("Timers initialized.");
+    }
+
+    private void initializeServerState() {
         ServerState.state = ServerState.NORMAL;
         ServerState.setState(ServerState.NORMAL);
-        if (plugin.getConfigLoader().getBooleanCFG("Importers.Enabled")) {
-            SQLImp.connectDB();
-            AuthmeImporter.importDB();
+    }
+
+    private void importDataIfEnabled() {
+        if (!configLoader.getBooleanCFG("Importers.Enabled")) {
+            return;
         }
-        this.getProxy().registerChannel("dba:" + this.getConfigLoader().getStringCFG("PluginChannel.verify"));
-        this.getProxy().registerChannel("dba:" + this.getConfigLoader().getStringCFG("PluginChannel.premium"));
-        this.getProxy().registerChannel("dba:" + this.getConfigLoader().getStringCFG("PluginChannel.cracked"));
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eChannels Registered make sure to SYNC your config section DBA.PluginChannel with DBA config on spigot!");
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eChecking for §aFloodGateAPI");
-        if (ProxyServer.getInstance().getPluginManager().getPlugin("floodgate") != null) {
-            this.setFloodgateApi(FloodgateApi.getInstance());
-            if (this.getFloodgateApi() != null) {
-                ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §aFloodGateAPI §eLoaded correctly");
+
+        logInfo("Importing data...");
+        SQLImp.connectDB();
+        AuthmeImporter.importDB();
+        logInfo("Data imported.");
+    }
+
+    private void registerPluginChannels() {
+        String verifyChannel = "dba:" + configLoader.getStringCFG("PluginChannel.verify");
+        String premiumChannel = "dba:" + configLoader.getStringCFG("PluginChannel.premium");
+        String crackedChannel = "dba:" + configLoader.getStringCFG("PluginChannel.cracked");
+
+        getProxy().registerChannel(verifyChannel);
+        getProxy().registerChannel(premiumChannel);
+        getProxy().registerChannel(crackedChannel);
+
+        logInfo("Plugin channels registered. Make sure to sync DBA.PluginChannel config section with Spigot!");
+    }
+
+    private void initializeFloodGate() {
+        logInfo("Checking for FloodGateAPI...");
+
+        if (ProxyServer.getInstance().getPluginManager().getPlugin("floodgate") == null) {
+            logInfo("FloodGateAPI not found.");
+            setFloodgateApi(null);
+            return;
+        }
+
+        try {
+            setFloodgateApi(FloodgateApi.getInstance());
+            if (floodgateApi != null) {
+                logInfo("FloodGateAPI loaded successfully!");
             }
-        } else {
-            ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §aFloodGateAPI §cnot found");
-            this.setFloodgateApi(null);
+        } catch (Exception e) {
+            logWarning("Failed to load FloodGateAPI: " + e.getMessage());
+            setFloodgateApi(null);
         }
     }
 
-    public void onDisable() {
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §cShutting Down DB Connections!");
-        PoolManager.closeConnection();
+    private void logInfo(String message) {
+        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §e" + message);
     }
 
-    private void Commands() {
-        plugin.getProxy().getPluginManager().registerCommand(this, new PremiumCMD(this));
-        plugin.getProxy().getPluginManager().registerCommand(this, new CrackedCMD(this));
-        plugin.getProxy().getPluginManager().registerCommand(this, new RegisterCMD(this));
-        plugin.getProxy().getPluginManager().registerCommand(this, new LoginCMD(this));
-        plugin.getProxy().getPluginManager().registerCommand(this, new AdminCMD(this));
-        plugin.getProxy().getPluginManager().registerCommand(this, new ChangeCMD(this));
-        plugin.getProxy().getPluginManager().registerCommand(this, new LogoutCMD(this));
-        if (plugin.getConfigLoader().getBooleanCFG("Options.LobbyCommands")) {
-            if (plugin.getConfigLoader().getBooleanCFG("Options.LobbyCommandsSpawn")) {
-                plugin.getProxy().getPluginManager().registerCommand(this, new LobbyCMD(this, true));
-            } else {
-                plugin.getProxy().getPluginManager().registerCommand(this, new LobbyCMD(this));
-            }
-        }
+    private void logWarning(String message) {
+        ProxyServer.getInstance().getLogger().warning("§a§lDBA §8| §c" + message);
     }
-
 }
