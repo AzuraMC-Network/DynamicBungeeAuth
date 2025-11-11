@@ -447,7 +447,7 @@ public class AdminCMD extends Command {
 
                 plugin.getLoginTimer().getTimers().remove(player.getName());
                 SQL.setPlayerData(player, "valid", "1");
-                PlayersMethods.CleanTitles(player);
+                PlayersMethods.cleanAndShowSuccessfulTitle(player);
                 PlayersMethods.setValidCache(player);
                 ServerMethods.sendLobbyServer(player);
                 SQL.setPlayerData(player, "log_ip", player.getAddress().getAddress().getHostAddress());

@@ -157,7 +157,7 @@ public class LoginCMD extends Command {
         SQL.setPlayerData(player, "lwlogged", "1");
 
         // clean title & cache
-        PlayersMethods.CleanTitles(player);
+        PlayersMethods.cleanAndShowSuccessfulTitle(player);
         PlayersMethods.setValidCache(player);
 
         // send to lobby

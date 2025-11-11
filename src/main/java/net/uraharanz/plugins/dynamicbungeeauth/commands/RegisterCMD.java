@@ -215,7 +215,7 @@ public class RegisterCMD extends Command {
         sendMessage(player, "Commands.register.success");
 
         plugin.getSpamPlayerList().removePlayer(player.getName());
-        PlayersMethods.CleanTitles(player);
+        PlayersMethods.cleanAndShowSuccessfulTitle(player);
 
         performAutoLogin(player);
     }
