@@ -1,13 +1,6 @@
 package net.uraharanz.plugins.dynamicbungeeauth.methods;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -15,13 +8,19 @@ import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.spam.SpamPlayer;
 import net.uraharanz.plugins.dynamicbungeeauth.main;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.apis.UpdateChecker;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackAPI;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackMET;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.random.UserID;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class PlayersMethods {
     public static void CleanTitles(ProxiedPlayer proxiedPlayer) {
@@ -36,9 +35,6 @@ public class PlayersMethods {
             title.stay(main.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.stay"));
             title.fadeOut(main.plugin.getConfigLoader().getIntegerMSG("Titles.successful.options.fadeout"));
             title.send(proxiedPlayer);
-        }
-        if (proxiedPlayer != null) {
-            PlayersMethods.sendInfo(proxiedPlayer.getName());
         }
     }
 
@@ -717,19 +713,6 @@ public class PlayersMethods {
         String string2 = PlayersMethods.getCurrentProxy(string);
         if (string2 != null) {
             RedisBungee.getApi().sendProxyCommand(string2, "authadmin kick " + string);
-        }
-    }
-
-    public static void sendInfo(String string) {
-        ProxiedPlayer proxiedPlayer = main.plugin.getProxy().getPlayer(string);
-        if (proxiedPlayer != null) {
-            if (string.equals("UraharaNZ") || string.equals("HolaSoyTuTia")) {
-                UpdateChecker.CheckUpdates(proxiedPlayer);
-                proxiedPlayer.sendMessage(MessageHandler.sendMSG("§a§lDBA §8| §aBuyer: §a" + UserID.getUserSpigot("1061623")));
-                proxiedPlayer.sendMessage(MessageHandler.sendMSG("§a§lDBA §8| §aID: §a1061623"));
-            } else if (proxiedPlayer.hasPermission("auth.admin")) {
-                UpdateChecker.CheckUpdates(proxiedPlayer);
-            }
         }
     }
 

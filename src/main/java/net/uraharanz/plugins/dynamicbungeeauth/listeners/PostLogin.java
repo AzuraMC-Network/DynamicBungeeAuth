@@ -8,7 +8,6 @@ import net.uraharanz.plugins.dynamicbungeeauth.cache.cache.PlayerCache;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerData;
 import net.uraharanz.plugins.dynamicbungeeauth.main;
 import net.uraharanz.plugins.dynamicbungeeauth.methods.PlayersMethods;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.apis.UpdateChecker;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.callback.CallbackSQL;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
@@ -256,14 +255,6 @@ implements Listener {
                     }
                 });
             }
-        }
-    }
-
-    @EventHandler
-    public void onPostLoginU(PostLoginEvent postLoginEvent) {
-        ProxiedPlayer proxiedPlayer;
-        if (postLoginEvent.getPlayer() != null && postLoginEvent.getPlayer().isConnected() && (proxiedPlayer = postLoginEvent.getPlayer()).hasPermission("auth.notifications")) {
-            UpdateChecker.CheckUpdates(proxiedPlayer);
         }
     }
 }

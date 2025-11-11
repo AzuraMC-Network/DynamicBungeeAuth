@@ -1,7 +1,5 @@
 package net.uraharanz.plugins.dynamicbungeeauth;
 
-import java.util.HashMap;
-
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
@@ -12,34 +10,26 @@ import net.uraharanz.plugins.dynamicbungeeauth.cache.fix.FixList;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.player.PlayerDataList;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.server.ServerState;
 import net.uraharanz.plugins.dynamicbungeeauth.cache.spam.SpamPlayerList;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.AdminCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.ChangeCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.CrackedCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.LobbyCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.LoginCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.LogoutCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.PremiumCMD;
-import net.uraharanz.plugins.dynamicbungeeauth.commands.RegisterCMD;
+import net.uraharanz.plugins.dynamicbungeeauth.commands.*;
 import net.uraharanz.plugins.dynamicbungeeauth.listeners.loader.LoadListeners;
 import net.uraharanz.plugins.dynamicbungeeauth.loader.ConfigLoader;
 import net.uraharanz.plugins.dynamicbungeeauth.timers.LoginTimer;
 import net.uraharanz.plugins.dynamicbungeeauth.timers.MaxLogin;
 import net.uraharanz.plugins.dynamicbungeeauth.timers.RegisterTimer;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.apis.ProfileGenerator;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.apis.UpdateChecker;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.configs.Files;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.importers.AuthmeImporter;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.importers.SQLImp;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.PoolManager;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.random.UserID;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.smtp.EmailSystem;
 import org.geysermc.floodgate.api.FloodgateApi;
+
+import java.util.HashMap;
 
 @Getter
 @Setter
 public class main
 extends Plugin {
-    public static final String USER = "%%__USER__%%";
     public static main plugin;
     private Files files;
     private LoadListeners listeners;
@@ -62,7 +52,6 @@ extends Plugin {
         plugin = this;
         serverLobby = new HashMap<>();
         serverAuth = new HashMap<>();
-        ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eThanks for your purchase §e" + UserID.getUserSpigot("1061623") + "§e, if you have some issues join our support server: https://discord.com/invite/6jFTQaD");
         ProxyServer.getInstance().getLogger().info("§a§lDBA §8| §eGenerating and loading Config Files.");
         this.setFiles(new Files(this));
         this.files.createConfigs();
@@ -98,7 +87,6 @@ extends Plugin {
         this.setSpamPlayerList(new SpamPlayerList(this));
         ServerState.state = ServerState.NORMAL;
         ServerState.setState(ServerState.NORMAL);
-        UpdateChecker.CheckUpdates();
         if (plugin.getConfigLoader().getBooleanCFG("Importers.Enabled")) {
             SQLImp.connectDB();
             AuthmeImporter.importDB();
