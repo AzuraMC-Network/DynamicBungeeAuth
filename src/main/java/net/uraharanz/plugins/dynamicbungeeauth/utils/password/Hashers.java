@@ -1,48 +1,55 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.password;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+/**
+ * @author an5w1r@163.com
+ */
 public class Hashers {
-    public static String md5(String string) {
-        String string2 = null;
+
+    public static String md5(String input) {
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(string.getBytes(), 0, string.length());
-            string2 = new BigInteger(1, messageDigest.digest()).toString();
+            MessageDigest digest = MessageDigest.getInstance("MD5");
+            digest.update(input.getBytes(StandardCharsets.UTF_8), 0, input.length());
+            return new BigInteger(1, digest.digest()).toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 algorithm not available", e);
         }
-        catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            noSuchAlgorithmException.printStackTrace();
-        }
-        return string2;
     }
 
-    public static String sha512c(String string) {
-        String string2 = null;
+    public static String sha512c(String input) {
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-            messageDigest.reset();
-            messageDigest.update(string.getBytes());
-            byte[] byArray = messageDigest.digest();
-            string2 = String.format("%0" + (byArray.length << 1) + "x", new BigInteger(1, byArray));
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
+            digest.reset();
+            digest.update(input.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest();
+
+            return String.format("%0" + (hash.length << 1) + "x", new BigInteger(1, hash));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-512 algorithm not available", e);
         }
-        catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            noSuchAlgorithmException.printStackTrace();
-        }
-        return string2;
     }
 
-    public static String olddefault(String string) {
-        String string2 = null;
+    public static String oldDefault(String password) {
         try {
-            StrongPasswordEncryptor strongPasswordEncryptor = new StrongPasswordEncryptor();
-            string2 = strongPasswordEncryptor.encryptPassword(string);
+            StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
+            return encryptor.encryptPassword(password);
+        } catch (Exception e) {
+            throw new IllegalStateException("Password encryption failed", e);
         }
-        catch (Exception exception) {
-            exception.printStackTrace();
+    }
+
+    public static boolean checkOldDefault(String plainPassword, String encryptedPassword) {
+        try {
+            StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
+            return encryptor.checkPassword(plainPassword, encryptedPassword);
+        } catch (Exception e) {
+            throw new IllegalStateException("Password verification failed", e);
         }
-        return string2;
     }
 }

@@ -124,7 +124,7 @@ public class ChangeCMD extends Command {
         SQL.getPlayerDataS(player, "salt", new CallbackSQL<String>() {
             @Override
             public void done(String salt) {
-                String hashedOldPassword = HashMethods.HashPassword(player, oldPassword, salt);
+                String hashedOldPassword = HashMethods.hashPassword(player, oldPassword, salt);
 
                 if (storedPassword.equals(hashedOldPassword)) {
                     updatePassword(player, newPassword, salt);
@@ -141,7 +141,7 @@ public class ChangeCMD extends Command {
     }
 
     private void updatePassword(ProxiedPlayer player, String newPassword, String salt) {
-        String hashedNewPassword = HashMethods.HashPassword(player, newPassword, salt);
+        String hashedNewPassword = HashMethods.hashPassword(player, newPassword, salt);
         SQL.setPlayerData(player, "password", hashedNewPassword);
         sendMessage(player, "Commands.changepassword.successful");
     }

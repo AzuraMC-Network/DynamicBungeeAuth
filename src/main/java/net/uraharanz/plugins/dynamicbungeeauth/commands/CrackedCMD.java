@@ -137,7 +137,7 @@ public class CrackedCMD extends Command {
             @Override
             public void done(String salt) {
                 if (isValidSalt(salt)) {
-                    String hashedPassword = HashMethods.HashPassword(player, password, salt);
+                    String hashedPassword = HashMethods.hashPassword(player, password, salt);
                     SQL.setPlayerDataS(player.getName(), "password", hashedPassword);
                 }
             }

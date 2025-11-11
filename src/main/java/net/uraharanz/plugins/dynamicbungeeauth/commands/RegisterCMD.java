@@ -198,7 +198,7 @@ public class RegisterCMD extends Command {
         SQL.getPlayerDataS(player, "salt", new CallbackSQL<String>() {
             @Override
             public void done(String salt) {
-                String hashedPassword = HashMethods.HashPassword(player, password, salt);
+                String hashedPassword = HashMethods.hashPassword(player, password, salt);
                 SQL.setPlayerData(player, "password", hashedPassword);
 
                 completeRegistration(player);

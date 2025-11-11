@@ -94,7 +94,7 @@ public class LoginCMD extends Command {
     }
 
     private void verifyPassword(final ProxiedPlayer player, final String password) {
-        HashMethods.MashMatch(player, password, new CallbackSQL<Boolean>() {
+        HashMethods.matchPassword(player, password, new CallbackSQL<Boolean>() {
             @Override
             public void done(Boolean isPasswordCorrect) {
                 if (!isPasswordCorrect) {

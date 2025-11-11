@@ -1,27 +1,40 @@
 package net.uraharanz.plugins.dynamicbungeeauth.utils.password;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * @author an5w1r@163.com
+ */
 public class AuthmeHashers {
-    public static boolean compareSHA256(String string, String string2) {
-        String[] stringArray = string2.split("\\$");
-        String string3 = stringArray[2];
-        String string4 = "$SHA$" + string3 + "$" + AuthmeHashers.hashSHA256(AuthmeHashers.hashSHA256(string) + string3);
-        return string2.equals(string4);
+
+    private static final String AUTHME_SHA256_PREFIX = "$SHA$";
+
+    public static boolean compareSHA256(String plainPassword, String hashedPassword) {
+        String[] parts = hashedPassword.split("\\$");
+        if (parts.length < 3) {
+            return false;
+        }
+
+        String salt = parts[2];
+        String expectedHash = AUTHME_SHA256_PREFIX + salt + "$" +
+                hashSHA256(hashSHA256(plainPassword) + salt);
+
+        return hashedPassword.equals(expectedHash);
     }
 
-    private static String hashSHA256(String string) {
+    private static String hashSHA256(String input) {
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            messageDigest.reset();
-            messageDigest.update(string.getBytes());
-            byte[] byArray = messageDigest.digest();
-            return String.format("%0" + (byArray.length << 1) + "x", new BigInteger(1, byArray));
-        }
-        catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            throw new IllegalStateException(noSuchAlgorithmException);
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            digest.reset();
+            digest.update(input.getBytes(StandardCharsets.UTF_8));
+            byte[] hash = digest.digest();
+
+            return String.format("%0" + (hash.length << 1) + "x", new BigInteger(1, hash));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm not available", e);
         }
     }
 }
