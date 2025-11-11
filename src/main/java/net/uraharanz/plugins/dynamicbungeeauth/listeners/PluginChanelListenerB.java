@@ -1,6 +1,5 @@
 package net.uraharanz.plugins.dynamicbungeeauth.listeners;
 
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -12,51 +11,38 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-public class PluginChanelListenerB
-implements Listener {
-    private final DBAPlugin plugin;
+/**
+ * @author an5w1r@163.com
+ */
+public class PluginChanelListenerB implements Listener {
     private final String premiumChannel;
     private final String crackedChannel;
 
     public PluginChanelListenerB(DBAPlugin plugin) {
-        this.plugin = plugin;
         this.premiumChannel = plugin.getConfigLoader().getStringCFG("PluginChannel.premium");
         this.crackedChannel = plugin.getConfigLoader().getStringCFG("PluginChannel.cracked");
     }
 
     @EventHandler
-    public void onPluginMessage(PluginMessageEvent pluginMessageEvent) {
-        ProxiedPlayer proxiedPlayer;
-        String string;
-        String string2;
-        DataInputStream dataInputStream;
-        if (pluginMessageEvent.getTag().equals(this.premiumChannel)) {
-            dataInputStream = new DataInputStream(new ByteArrayInputStream(pluginMessageEvent.getData()));
-            try {
-                string2 = dataInputStream.readUTF();
-                string = dataInputStream.readUTF();
-                proxiedPlayer = ProxyServer.getInstance().getPlayer(string);
-                if (proxiedPlayer != null) {
-                    BungeeCord.getInstance().getPluginManager().dispatchCommand(proxiedPlayer, "premium");
-                }
-            }
-            catch (IOException iOException) {
-                iOException.printStackTrace();
-            }
+    public void onPluginMessage(PluginMessageEvent event) {
+        handleChannelMessage(event, this.premiumChannel, "premium");
+        handleChannelMessage(event, this.crackedChannel, "cracked");
+    }
+
+    private void handleChannelMessage(PluginMessageEvent event, String expectedChannel, String commandToDispatch) {
+        if (!event.getTag().equals(expectedChannel)) {
+            return;
         }
-        if (pluginMessageEvent.getTag().equals(this.crackedChannel)) {
-            dataInputStream = new DataInputStream(new ByteArrayInputStream(pluginMessageEvent.getData()));
-            try {
-                string2 = dataInputStream.readUTF();
-                string = dataInputStream.readUTF();
-                proxiedPlayer = ProxyServer.getInstance().getPlayer(string);
-                if (proxiedPlayer != null) {
-                    BungeeCord.getInstance().getPluginManager().dispatchCommand(proxiedPlayer, "cracked");
-                }
+        try {
+            DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
+            String targetPlayerName = in.readUTF();
+            ProxiedPlayer targetPlayer = ProxyServer.getInstance().getPlayer(targetPlayerName);
+            if (targetPlayer != null) {
+                ProxyServer.getInstance().getPluginManager().dispatchCommand(targetPlayer, commandToDispatch);
             }
-            catch (IOException iOException) {
-                iOException.printStackTrace();
-            }
+        } catch (IOException ex) {
+            ProxyServer.getInstance().getLogger().severe("Failed to read plugin message for channel: " + expectedChannel);
+            ex.printStackTrace();
         }
     }
 }
