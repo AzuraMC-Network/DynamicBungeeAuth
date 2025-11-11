@@ -7,8 +7,10 @@ import net.uraharanz.plugins.dynamicbungeeauth.DBAPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.messages.MessageHandler;
 import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.SQL;
 
-public class LogoutCMD
-extends Command {
+/**
+ * @author an5w1r@163.com
+ */
+public class LogoutCMD extends Command {
     private DBAPlugin plugin;
 
     public LogoutCMD(DBAPlugin plugin) {
@@ -18,7 +20,7 @@ extends Command {
 
     public void execute(CommandSender commandSender, String[] stringArray) {
         if (commandSender instanceof ProxiedPlayer) {
-            ProxiedPlayer proxiedPlayer = (ProxiedPlayer)commandSender;
+            ProxiedPlayer proxiedPlayer = (ProxiedPlayer) commandSender;
             proxiedPlayer.disconnect(MessageHandler.sendMSG(this.plugin.getConfigLoader().getStringMSG("KickMessages.Logout")));
             this.plugin.getPlayerDataList().removePlayer(proxiedPlayer.getName());
             this.plugin.getPlayerCacheList().removeCache(proxiedPlayer.getName());
