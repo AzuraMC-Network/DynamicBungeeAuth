@@ -23,25 +23,21 @@ public class PlayerData {
     private boolean lwlogged;
     private boolean playing;
 
-    public PlayerData(String string, String string2, String string3, String string4, String string5, String string6, String string7, Date date, Date date2, boolean bl, boolean bl2, String string8, boolean bl3, boolean bl4) {
-        this.uuid = string;
-        this.name = string2;
-        this.email = string3;
-        this.reg_ip = string4;
-        this.log_ip = string5;
-        this.password = string6;
-        this.salt = string7;
-        this.firstjoin = date;
-        this.lastjoin = date2;
-        this.premium = bl;
-        this.valid = bl2;
-        this.server = string8;
-        this.lwlogged = bl3;
-        this.playing = bl4;
-    }
-
-    public void setPremiun(boolean bl) {
-        this.premium = bl;
+    public PlayerData(String uuid, String name, String email, String regIp, String logIp, String password, String salt, Date firstJoin, Date lastJoin, boolean premium, boolean valid, String server, boolean lwLogged, boolean playing) {
+        this.uuid = uuid;
+        this.name = name;
+        this.email = email;
+        this.reg_ip = regIp;
+        this.log_ip = logIp;
+        this.password = password;
+        this.salt = salt;
+        this.firstjoin = firstJoin;
+        this.lastjoin = lastJoin;
+        this.premium = premium;
+        this.valid = valid;
+        this.server = server;
+        this.lwlogged = lwLogged;
+        this.playing = playing;
     }
 
 }

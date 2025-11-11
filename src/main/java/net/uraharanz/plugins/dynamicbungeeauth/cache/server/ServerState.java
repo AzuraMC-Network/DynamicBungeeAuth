@@ -14,5 +14,4 @@ public enum ServerState {
     public static boolean isState(ServerState serverState) {
         return state == serverState;
     }
-
 }

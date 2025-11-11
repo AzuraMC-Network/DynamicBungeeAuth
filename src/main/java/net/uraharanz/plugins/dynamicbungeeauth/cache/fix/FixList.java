@@ -1,35 +1,35 @@
 package net.uraharanz.plugins.dynamicbungeeauth.cache.fix;
 
-import java.util.HashMap;
-import net.uraharanz.plugins.dynamicbungeeauth.cache.fix.Fix;
 import net.uraharanz.plugins.dynamicbungeeauth.main;
 
-public class FixList {
-    private HashMap<String, Fix> player;
-    private main plugin;
+import java.util.HashMap;
+import java.util.Map;
 
-    public FixList(main main2) {
-        this.plugin = main2;
-        this.player = new HashMap<>();
+public class FixList {
+    private final main plugin;
+    private final Map<String, Fix> fixes;
+
+    public FixList(main plugin) {
+        this.plugin = plugin;
+        this.fixes = new HashMap<>();
     }
 
     public boolean addPlayer(Fix fix) {
-        this.player.putIfAbsent(fix.getName(), fix);
+        this.fixes.putIfAbsent(fix.getName(), fix);
         return false;
     }
 
-    public Fix searchPlayer(String string) {
-        Fix fix;
-        if (string != null && (fix = this.player.get(string)) != null) {
-            return fix;
+    public Fix searchPlayer(String playerName) {
+        if (playerName != null) {
+            return this.fixes.get(playerName);
         }
         return null;
     }
 
-    public boolean removePlayer(String string) {
-        Fix fix = this.searchPlayer(string);
+    public boolean removePlayer(String playerName) {
+        Fix fix = this.searchPlayer(playerName);
         if (fix != null) {
-            this.player.remove(string);
+            this.fixes.remove(playerName);
             return true;
         }
         return false;

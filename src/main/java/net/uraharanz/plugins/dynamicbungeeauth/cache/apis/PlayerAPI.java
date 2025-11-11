@@ -13,5 +13,4 @@ public class PlayerAPI {
         this.name = name;
         this.uuid = uuid;
     }
-
 }

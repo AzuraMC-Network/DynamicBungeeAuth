@@ -10,10 +10,9 @@ public class PlayerCache {
     private boolean autologin;
     private String captcha;
 
-    public PlayerCache(String string, boolean bl, String string2) {
-        this.name = string;
-        this.autologin = bl;
-        this.captcha = string2;
+    public PlayerCache(String name, boolean autoLogin, String captcha) {
+        this.name = name;
+        this.autologin = autoLogin;
+        this.captcha = captcha;
     }
-
 }

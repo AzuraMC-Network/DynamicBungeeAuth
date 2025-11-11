@@ -10,10 +10,9 @@ public class SpamPlayer {
     private String status;
     private boolean valid;
 
-    public SpamPlayer(String string, String string2, boolean bl) {
-        this.name = string;
-        this.status = string2;
-        this.valid = bl;
+    public SpamPlayer(String name, String status, boolean valid) {
+        this.name = name;
+        this.status = status;
+        this.valid = valid;
     }
-
 }

@@ -1,53 +1,53 @@
 package net.uraharanz.plugins.dynamicbungeeauth.cache.player;
 
+import net.uraharanz.plugins.dynamicbungeeauth.main;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
-import net.uraharanz.plugins.dynamicbungeeauth.main;
 
 public class PlayerDataList {
     public main plugin;
-    private HashMap<String, PlayerData> player;
-    private int Time;
+    private final Map<String, PlayerData> players;
+    private final int cleanIntervalMinutes;
 
-    public PlayerDataList(main main2) {
-        this.plugin = main2;
-        this.player = new HashMap<>();
-        this.Time = main2.getConfigLoader().getIntegerCFG("Timers.CleanRequest");
+    public PlayerDataList(main plugin) {
+        this.plugin = plugin;
+        this.players = new HashMap<>();
+        this.cleanIntervalMinutes = plugin.getConfigLoader().getIntegerCFG("Timers.CleanRequest");
     }
 
     public boolean addPlayer(PlayerData playerData) {
-        PlayerData playerData2 = this.player.get(playerData.getName());
-        if (playerData2 == null) {
-            this.player.put(playerData.getName(), playerData);
+        PlayerData existingPlayer = this.players.get(playerData.getName());
+        if (existingPlayer == null) {
+            this.players.put(playerData.getName(), playerData);
             return true;
         }
         return false;
     }
 
-    public PlayerData searchPlayer(String string) {
-        PlayerData playerData;
-        if (string != null && (playerData = this.player.get(string)) != null) {
-            return playerData;
+    public PlayerData searchPlayer(String playerName) {
+        if (playerName != null) {
+            return this.players.get(playerName);
         }
         return null;
     }
 
     public boolean modifyPlayer(PlayerData playerData) {
-        PlayerData playerData2 = this.searchPlayer(playerData.getName());
-        if (playerData2 != null) {
-            this.player.replace(playerData.getName(), playerData2, playerData);
+        PlayerData existingPlayer = this.searchPlayer(playerData.getName());
+        if (existingPlayer != null) {
+            this.players.replace(playerData.getName(), existingPlayer, playerData);
             return true;
         }
         return false;
     }
 
-    public boolean removePlayer(String string) {
-        PlayerData playerData = this.searchPlayer(string);
+    public boolean removePlayer(String playerName) {
+        PlayerData playerData = this.searchPlayer(playerName);
         if (playerData != null) {
-            this.player.remove(string);
+            this.players.remove(playerName);
             return true;
         }
         return false;
@@ -55,12 +55,13 @@ public class PlayerDataList {
 
     public void cleanData() {
         this.plugin.getProxy().getScheduler().schedule(main.plugin, () -> {
-            HashSet<String> hashSet = new HashSet<>();
-            for (Map.Entry<String, PlayerData> entry : this.player.entrySet()) {
-                if (entry.getValue().isPlaying()) continue;
-                hashSet.add(entry.getKey());
+            Set<String> playersToRemove = new HashSet<>();
+            for (Map.Entry<String, PlayerData> entry : this.players.entrySet()) {
+                if (!entry.getValue().isPlaying()) {
+                    playersToRemove.add(entry.getKey());
+                }
             }
-            this.player.keySet().removeAll(hashSet);
-        }, 1L, this.Time, TimeUnit.MINUTES);
+            this.players.keySet().removeAll(playersToRemove);
+        }, 1L, this.cleanIntervalMinutes, TimeUnit.MINUTES);
     }
 }
