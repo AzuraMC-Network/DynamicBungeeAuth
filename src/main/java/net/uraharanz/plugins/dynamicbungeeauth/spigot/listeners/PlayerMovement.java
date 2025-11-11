@@ -1,7 +1,7 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners;
 
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.cache.PlayerInfo;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,12 +11,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class PlayerMovement
 implements Listener {
-    private final main plugin;
+    private final DBABukkitPlugin plugin;
     private final boolean SetupMode = Config.get("ConfigS.yml").getBoolean("SetupMode");
     private final boolean BlockMovement = Config.get("ConfigS.yml").getBoolean("PlayerOptions.BlockMovement");
 
-    public PlayerMovement(main main2) {
-        this.plugin = main2;
+    public PlayerMovement(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler

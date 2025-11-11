@@ -1,7 +1,7 @@
 name: DynamicBungeeAuth
 version: 10.30B
 author: UraharaNZ
-main: net.uraharanz.plugins.dynamicbungeeauth.spigot.main
+main: net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin
 description: AuthSystem plugin
 commands:
   setlocation:

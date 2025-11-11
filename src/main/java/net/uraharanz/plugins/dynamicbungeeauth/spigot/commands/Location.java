@@ -1,6 +1,6 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.commands;
 
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 
 public class Location
 implements CommandExecutor {
-    private final main plugin;
+    private final DBABukkitPlugin plugin;
 
-    public Location(main main2) {
-        this.plugin = main2;
+    public Location(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public boolean onCommand(CommandSender commandSender, Command command, String string, String[] stringArray) {

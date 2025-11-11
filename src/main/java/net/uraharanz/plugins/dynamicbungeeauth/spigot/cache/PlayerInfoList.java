@@ -1,16 +1,16 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.cache;
 
-import java.util.ArrayList;
-
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public class PlayerInfoList {
-    private main plugin;
+    private DBABukkitPlugin plugin;
     private ArrayList<PlayerInfo> player;
 
-    public PlayerInfoList(main main2) {
-        this.plugin = main2;
+    public PlayerInfoList(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
         this.player = new ArrayList<>();
     }
 
@@ -25,16 +25,16 @@ public class PlayerInfoList {
         return false;
     }
 
-    public PlayerInfo searchPlayer(String string) {
+    public PlayerInfo searchPlayer(String playerName) {
         for (PlayerInfo playerInfo : this.player) {
-            if (playerInfo.getName() == null || !playerInfo.getName().equals(string)) continue;
+            if (playerInfo.getName() == null || !playerInfo.getName().equals(playerName)) continue;
             return playerInfo;
         }
         return null;
     }
 
-    public boolean removePlayer(String string) {
-        PlayerInfo playerInfo = this.searchPlayer(string);
+    public boolean removePlayer(String playerName) {
+        PlayerInfo playerInfo = this.searchPlayer(playerName);
         if (playerInfo != null) {
             this.player.remove(playerInfo);
         }

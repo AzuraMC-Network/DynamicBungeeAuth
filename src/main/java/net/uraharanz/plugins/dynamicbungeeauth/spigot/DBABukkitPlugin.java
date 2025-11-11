@@ -1,5 +1,18 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot;
 
+import lombok.Getter;
+import lombok.Setter;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.cache.PlayerInfoList;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.commands.Cracked;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.commands.Location;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.commands.Premium;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners.*;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
+import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.PoolManager;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,35 +21,18 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 
-import lombok.Getter;
-import lombok.Setter;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.cache.PlayerInfoList;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.commands.Cracked;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.commands.Location;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.commands.Premium;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners.JoinListener;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners.PlayerEvents;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners.PlayerMovement;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners.PluginChannelListener;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners.WorldEvents;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
-import net.uraharanz.plugins.dynamicbungeeauth.utils.mysql.PoolManager;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
 @Setter
 @Getter
-public class main
+public class DBABukkitPlugin
 extends JavaPlugin {
     public static final String USER = "%%__USER__%%";
-    public static main plugin;
+    public static DBABukkitPlugin plugin;
     private PlayerInfoList playerInfoList;
     public static PluginMessageListener pml;
     public HashMap<String, Integer> taskID;
 
     public void onEnable() {
-        main.loadConfig0();
+        DBABukkitPlugin.loadConfig0();
         plugin = this;
         this.taskID = new HashMap<>();
         Config.save("ConfigS.yml");

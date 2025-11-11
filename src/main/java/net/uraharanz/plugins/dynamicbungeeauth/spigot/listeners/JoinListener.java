@@ -1,6 +1,6 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners;
 
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class JoinListener
 implements Listener {
-    private final main plugin;
+    private final DBABukkitPlugin plugin;
     private final boolean SetupMode = Config.get("ConfigS.yml").getBoolean("SetupMode");
     private final boolean LocationD = Config.get("ConfigS.yml").getBoolean("Location.Disable");
     private final boolean JoinMD = Config.get("ConfigS.yml").getBoolean("Options.DisableJoinMSG");
@@ -24,8 +24,8 @@ implements Listener {
     private final boolean Blind = Config.get("ConfigS.yml").getBoolean("Options.BlindnessD");
     private static final boolean Inventory = Config.get("ConfigS.yml").getBoolean("Options.EnableInventory");
 
-    public JoinListener(main main2) {
-        this.plugin = main2;
+    public JoinListener(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler

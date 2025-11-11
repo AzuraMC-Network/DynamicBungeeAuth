@@ -1,19 +1,19 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners;
 
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.HashMap;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class PluginChannelListener
 implements PluginMessageListener {
@@ -31,15 +31,15 @@ implements PluginMessageListener {
         try {
             String string2 = dataInputStream.readUTF();
             if (string2.equalsIgnoreCase("dba:verifyplayer")) {
-                main.plugin.getPlayerInfoList().addPlayer(player);
-                Bukkit.getServer().getScheduler().runTask(main.plugin, () -> {
+                DBABukkitPlugin.plugin.getPlayerInfoList().addPlayer(player);
+                Bukkit.getServer().getScheduler().runTask(DBABukkitPlugin.plugin, () -> {
                     for (PotionEffect potionEffect : player.getActivePotionEffects()) {
                         if (!potionEffect.getType().equals(PotionEffectType.BLINDNESS)) continue;
                         player.removePotionEffect(potionEffect.getType());
                     }
                 });
                 if (AntiStuck && player.isOnline()) {
-                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(main.plugin, () -> {
+                    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DBABukkitPlugin.plugin, () -> {
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
                         try {
@@ -49,7 +49,7 @@ implements PluginMessageListener {
                         catch (Exception exception) {
                             exception.printStackTrace();
                         }
-                        player.sendPluginMessage(main.plugin, "BungeeCord", byteArrayOutputStream.toByteArray());
+                        player.sendPluginMessage(DBABukkitPlugin.plugin, "BungeeCord", byteArrayOutputStream.toByteArray());
                     }, AntiDelay * 20L);
                 }
                 if (Inventory) {

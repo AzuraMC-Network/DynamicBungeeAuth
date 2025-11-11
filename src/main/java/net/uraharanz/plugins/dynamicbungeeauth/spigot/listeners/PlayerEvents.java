@@ -1,6 +1,6 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners;
 
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 
 public class PlayerEvents
 implements Listener {
-    private final main plugin;
+    private final DBABukkitPlugin plugin;
     private final boolean interact = Config.get("ConfigS.yml").getBoolean("PlayerOptions.BlockInteract");
     private final boolean drop = Config.get("ConfigS.yml").getBoolean("PlayerOptions.BlockDrop");
     private final boolean pickup = Config.get("ConfigS.yml").getBoolean("PlayerOptions.BlockPickup");
@@ -27,8 +27,8 @@ implements Listener {
     private final boolean inventoryopen = Config.get("ConfigS.yml").getBoolean("PlayerOptions.BlockInventoryOpen");
     private final boolean falldamage = Config.get("ConfigS.yml").getBoolean("PlayerOptions.BlockFallDamage");
 
-    public PlayerEvents(main main2) {
-        this.plugin = main2;
+    public PlayerEvents(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler

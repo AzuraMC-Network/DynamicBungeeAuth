@@ -1,22 +1,22 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.commands;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class Cracked
 implements CommandExecutor {
-    private final main plugin;
+    private final DBABukkitPlugin plugin;
 
-    public Cracked(main main2) {
-        this.plugin = main2;
+    public Cracked(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public boolean onCommand(CommandSender commandSender, Command command, String string, String[] stringArray) {

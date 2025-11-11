@@ -9,9 +9,9 @@ public class PlayerInfo {
     private String name;
     private String uuid;
 
-    public PlayerInfo(String string, String string2) {
-        this.name = string;
-        this.uuid = string2;
+    public PlayerInfo(String name, String uuid) {
+        this.name = name;
+        this.uuid = uuid;
     }
 
 }

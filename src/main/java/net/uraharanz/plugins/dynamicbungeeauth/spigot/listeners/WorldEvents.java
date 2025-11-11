@@ -1,7 +1,7 @@
 package net.uraharanz.plugins.dynamicbungeeauth.spigot.listeners;
 
+import net.uraharanz.plugins.dynamicbungeeauth.spigot.DBABukkitPlugin;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.cache.PlayerInfo;
-import net.uraharanz.plugins.dynamicbungeeauth.spigot.main;
 import net.uraharanz.plugins.dynamicbungeeauth.spigot.utils.config.Config;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,11 +11,11 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 
 public class WorldEvents
 implements Listener {
-    private main plugin;
+    private DBABukkitPlugin plugin;
     private boolean DisableFood;
 
-    public WorldEvents(main main2) {
-        this.plugin = main2;
+    public WorldEvents(DBABukkitPlugin plugin) {
+        this.plugin = plugin;
         this.DisableFood = Config.get("ConfigS.yml").getBoolean("WorldOptions.DisableFood");
     }
 
