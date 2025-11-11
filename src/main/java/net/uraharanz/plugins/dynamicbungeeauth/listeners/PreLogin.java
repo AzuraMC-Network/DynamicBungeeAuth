@@ -18,286 +18,324 @@ import net.uraharanz.plugins.dynamicbungeeauth.utils.random.SaltGenerator;
 
 import java.util.UUID;
 
-public class PreLogin
-implements Listener {
+/**
+ * @author an5w1r@163.com
+ */
+public class PreLogin implements Listener {
     private final DBAPlugin plugin;
-    private final int Method;
-    private final int lengthC;
+
+    private static final int MIN_NAME_LENGTH = 3;
+    private static final int MAX_NAME_LENGTH = 16;
     private final boolean protectCrackedAccounts;
     private final String nameRegex;
-    private final String messageMaxCracked;
-    private final String maxLogin;
+    private final int workMethod;
+    private final int captchaLength;
+    private final String maxCrackedMessage;
     private final int maxLoginMode;
-    private final String nameCheck;
-    private final boolean floodgateAuto;
+    private final String maxLoginMessage;
+    private final String nameCheckMessage;
+    private final boolean floodgateAutoRegister;
 
     public PreLogin(DBAPlugin plugin) {
         this.plugin = plugin;
-        this.Method = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
-        this.lengthC = plugin.getConfigLoader().getIntegerCFG("Options.CaptchaLength");
+        this.workMethod = plugin.getConfigLoader().getIntegerCFG("WorkMethod.Value");
+        this.captchaLength = plugin.getConfigLoader().getIntegerCFG("Options.CaptchaLength");
         this.protectCrackedAccounts = plugin.getConfigLoader().getBooleanCFG("Options.ProtectRegisteredCrackedAccounts");
         this.nameRegex = plugin.getConfigLoader().getStringCFG("Options.NameRegex");
-        this.messageMaxCracked = plugin.getConfigLoader().getStringMSG("KickMessages.MaxLoginCracked");
-        this.maxLogin = plugin.getConfigLoader().getStringMSG("KickMessages.MaxLogin");
+        this.maxCrackedMessage = plugin.getConfigLoader().getStringMSG("KickMessages.MaxLoginCracked");
+        this.maxLoginMessage = plugin.getConfigLoader().getStringMSG("KickMessages.MaxLogin");
         this.maxLoginMode = plugin.getConfigLoader().getIntegerCFG("Options.MaxLogin.Mode");
-        this.nameCheck = plugin.getConfigLoader().getStringMSG("KickMessages.NameCheck");
-        this.floodgateAuto = plugin.getConfigLoader().getBooleanCFG("Options.Floodgate.AutoRegister");
+        this.nameCheckMessage = plugin.getConfigLoader().getStringMSG("KickMessages.NameCheck");
+        this.floodgateAutoRegister = plugin.getConfigLoader().getBooleanCFG("Options.Floodgate.AutoRegister");
     }
 
-    /*
-     * Enabled aggressive block sorting
-     */
     @EventHandler
-    public void onPreLogin(final PreLoginEvent preLoginEvent) {
-        preLoginEvent.registerIntent(this.plugin);
-        if (preLoginEvent.getConnection() == null) {
-            preLoginEvent.setCancelled(true);
-            preLoginEvent.completeIntent(this.plugin);
+    public void onPreLogin(final PreLoginEvent event) {
+        event.registerIntent(plugin);
+
+        if (!isValidConnection(event)) {
+            cancelEvent(event, null);
             return;
         }
-        if (!preLoginEvent.getConnection().isConnected()) {
-            preLoginEvent.setCancelled(true);
-            preLoginEvent.completeIntent(this.plugin);
+
+        final PendingConnection connection = event.getConnection();
+        final String playerName = connection.getName();
+
+        if (playerName == null) {
+            cancelEvent(event, null);
             return;
         }
-        if (preLoginEvent.isCancelled()) {
-            preLoginEvent.setCancelled(true);
-            preLoginEvent.completeIntent(this.plugin);
+
+        if (isFloodgateConnection(connection)) {
+            handleFloodgateConnection(event, connection, playerName);
             return;
         }
-        final String string = preLoginEvent.getConnection().getName();
-        if (string == null) {
-            preLoginEvent.setCancelled(true);
-            preLoginEvent.completeIntent(this.plugin);
+
+        if (!isValidPlayerName(playerName)) {
+            cancelEvent(event, null);
             return;
         }
-        if (preLoginEvent.getConnection().getUniqueId() != null) {
-            if (this.plugin.getFloodgateApi() == null) return;
-            if (this.plugin.getFloodgateApi().getPlayer(preLoginEvent.getConnection().getUniqueId()) == null) return;
-            this.floodgateConnection(preLoginEvent.getConnection(), string, this.floodgateAuto);
-            preLoginEvent.completeIntent(this.plugin);
+
+        plugin.getMaxLogin().incrementLogin();
+
+        if (!checkLoginLimits(event, playerName)) {
             return;
         }
-        if (string.length() >= 3 && string.length() <= 16 && string.matches(this.nameRegex) && !string.contains("$") && !string.contains(" ") && !string.contains("-")) {
-            PlayerData playerData;
-            this.plugin.getMaxLogin().incrementLogin();
-            if (ServerState.getState() == ServerState.ATTACK) {
-                playerData = this.plugin.getPlayerDataList().searchPlayer(string);
-                if (playerData == null) {
-                    preLoginEvent.setCancelReason(MessageHandler.sendMSG(this.maxLogin));
-                    preLoginEvent.setCancelled(true);
-                    preLoginEvent.completeIntent(this.plugin);
-                    return;
-                }
-                if (!playerData.isPremium()) {
-                    preLoginEvent.setCancelReason(MessageHandler.sendMSG(this.messageMaxCracked));
-                    preLoginEvent.setCancelled(true);
-                    preLoginEvent.completeIntent(this.plugin);
-                    return;
-                }
-            }
-            if (this.plugin.getMaxLogin().mustBlock()) {
-                if (this.maxLoginMode == 2) {
-                    if (ServerState.getState() == ServerState.ATTACK) {
-                        playerData = this.plugin.getPlayerDataList().searchPlayer(string);
-                        if (playerData == null) {
-                            preLoginEvent.setCancelReason(MessageHandler.sendMSG(this.maxLogin));
-                            preLoginEvent.setCancelled(true);
-                            preLoginEvent.completeIntent(this.plugin);
-                            return;
-                        }
-                        if (!playerData.isPremium()) {
-                            preLoginEvent.setCancelReason(MessageHandler.sendMSG(this.messageMaxCracked));
-                            preLoginEvent.setCancelled(true);
-                            preLoginEvent.completeIntent(this.plugin);
-                            return;
-                        }
-                    }
+
+        handleByWorkMode(event, connection, playerName);
+    }
+
+    private boolean isValidConnection(PreLoginEvent event) {
+        PendingConnection connection = event.getConnection();
+        return connection != null &&
+                connection.isConnected() &&
+                !event.isCancelled();
+    }
+
+    private boolean isFloodgateConnection(PendingConnection connection) {
+        if (connection.getUniqueId() == null) {
+            return false;
+        }
+
+        if (plugin.getFloodgateApi() == null) {
+            return false;
+        }
+
+        return plugin.getFloodgateApi().getPlayer(connection.getUniqueId()) != null;
+    }
+
+    private void handleFloodgateConnection(PreLoginEvent event, PendingConnection connection, String playerName) {
+        createPlayerCache(connection, playerName, floodgateAutoRegister);
+        event.completeIntent(plugin);
+    }
+
+    private boolean isValidPlayerName(String playerName) {
+        return playerName.length() >= MIN_NAME_LENGTH &&
+                playerName.length() <= MAX_NAME_LENGTH &&
+                playerName.matches(nameRegex) &&
+                !playerName.contains("$") &&
+                !playerName.contains(" ") &&
+                !playerName.contains("-");
+    }
+
+    private boolean checkLoginLimits(PreLoginEvent event, String playerName) {
+        if (ServerState.getState() == ServerState.ATTACK) {
+            return checkAttackMode(event, playerName);
+        }
+
+        if (plugin.getMaxLogin().mustBlock()) {
+            return checkBlockMode(event, playerName);
+        }
+
+        return true;
+    }
+
+    private boolean checkAttackMode(PreLoginEvent event, String playerName) {
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(playerName);
+
+        if (playerData == null) {
+            cancelEvent(event, maxLoginMessage);
+            return false;
+        }
+
+        if (!playerData.isPremium()) {
+            cancelEvent(event, maxCrackedMessage);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkBlockMode(PreLoginEvent event, String playerName) {
+        if (maxLoginMode == 2 && ServerState.getState() == ServerState.ATTACK) {
+            return checkAttackMode(event, playerName);
+        }
+
+        PlayerData playerData = plugin.getPlayerDataList().searchPlayer(playerName);
+
+        if (playerData == null) {
+            cancelEvent(event, maxLoginMessage);
+            return false;
+        }
+
+        if (!playerData.isPremium()) {
+            cancelEvent(event, maxCrackedMessage);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void handleByWorkMode(PreLoginEvent event, PendingConnection connection, String playerName) {
+        switch (workMethod) {
+            case 1:
+                handleMode1(event, connection, playerName);
+                break;
+            case 2:
+                handleMode2(event, connection, playerName);
+                break;
+            case 3:
+                handleMode3(event, connection, playerName);
+                break;
+        }
+    }
+
+    private void handleMode1(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        verifyPlayerName(event, playerName, () -> checkPremiumStatusMode1(event, connection, playerName));
+    }
+
+    private void checkPremiumStatusMode1(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        SQL.getPlayerDataS(playerName, "premium", new CallbackSQL<String>() {
+            @Override
+            public void done(String premiumStatus) {
+                if (premiumStatus == null) {
+                    checkMojangAndSetMode(event, connection, playerName);
+                } else if (premiumStatus.equals("1")) {
+                    setPremiumMode(event, connection, playerName);
                 } else {
-                    playerData = this.plugin.getPlayerDataList().searchPlayer(string);
-                    if (playerData == null) {
-                        preLoginEvent.setCancelReason(MessageHandler.sendMSG(this.maxLogin));
-                        preLoginEvent.setCancelled(true);
-                        preLoginEvent.completeIntent(this.plugin);
-                        return;
-                    }
-                    if (!playerData.isPremium()) {
-                        preLoginEvent.setCancelReason(MessageHandler.sendMSG(this.messageMaxCracked));
-                        preLoginEvent.setCancelled(true);
-                        preLoginEvent.completeIntent(this.plugin);
-                        return;
-                    }
+                    handleRegisteredCracked(event, connection, playerName);
                 }
             }
-            if (this.Method == 1) {
-                PlayersMethods.verifyNameCheck(string, new CallbackMET<Boolean>(){
 
-                    @Override
-                    public void done(Boolean bl) {
-                        if (!bl) {
-                            preLoginEvent.setCancelReason(MessageHandler.sendMSG(PreLogin.this.nameCheck));
-                            preLoginEvent.setCancelled(true);
-                            preLoginEvent.completeIntent(PreLogin.this.plugin);
-                            return;
-                        }
-                        SQL.getPlayerDataS(string, "premium", new CallbackSQL<String>(){
-
-                            @Override
-                            public void done(String string) {
-                                if (string == null) {
-                                    PreLogin.this.plugin.getProfileGenerator().Generator(string, new CallbackAPI<UUID>(){
-
-                                        @Override
-                                        public void done(UUID uUID) {
-                                            if (uUID != null) {
-                                                PlayerCache playerCache = new PlayerCache(string, true, SaltGenerator.generateCaptcha(PreLogin.this.lengthC));
-                                                PreLogin.this.plugin.getPlayerCacheList().addCache(playerCache);
-                                                preLoginEvent.getConnection().setOnlineMode(true);
-                                                preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                            } else {
-                                                PreLogin.this.setOffline(preLoginEvent.getConnection(), string);
-                                                preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void error(Exception exception) {
-                                        }
-                                    });
-                                } else if (string.equals("1")) {
-                                    PlayerCache playerCache = new PlayerCache(string, true, SaltGenerator.generateCaptcha(PreLogin.this.lengthC));
-                                    PreLogin.this.plugin.getPlayerCacheList().addCache(playerCache);
-                                    preLoginEvent.getConnection().setOnlineMode(true);
-                                    preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                } else if (PreLogin.this.protectCrackedAccounts) {
-                                    PreLogin.this.setOffline(preLoginEvent.getConnection(), string);
-                                    preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                } else {
-                                    PreLogin.this.plugin.getProfileGenerator().Generator(string, new CallbackAPI<UUID>(){
-
-                                        @Override
-                                        public void done(UUID uUID) {
-                                            if (uUID != null) {
-                                                PlayerCache playerCache = new PlayerCache(string, true, SaltGenerator.generateCaptcha(PreLogin.this.lengthC));
-                                                PreLogin.this.plugin.getPlayerCacheList().addCache(playerCache);
-                                                preLoginEvent.getConnection().setOnlineMode(true);
-                                                preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                            } else {
-                                                PreLogin.this.setOffline(preLoginEvent.getConnection(), string);
-                                                preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void error(Exception exception) {
-                                        }
-                                    });
-                                }
-                            }
-
-                            @Override
-                            public void error(Exception exception) {
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void error(Exception exception) {
-                    }
-                });
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
             }
-            if (this.Method == 2) {
-                PlayersMethods.verifyNameCheck(string, new CallbackMET<Boolean>(){
+        });
+    }
 
-                    @Override
-                    public void done(Boolean bl) {
-                        if (!bl) {
-                            preLoginEvent.setCancelReason(MessageHandler.sendMSG(PreLogin.this.nameCheck));
-                            preLoginEvent.setCancelled(true);
-                            preLoginEvent.completeIntent(PreLogin.this.plugin);
-                            return;
-                        }
-                        SQL.getPlayerDataS(string, "premium", new CallbackSQL<String>(){
-
-                            @Override
-                            public void done(String string) {
-                                if (string == null) {
-                                    SQL.isName(string, new CallbackSQL<Boolean>(){
-
-                                        @Override
-                                        public void done(Boolean bl) {
-                                            if (bl) {
-                                                PlayerCache playerCache = new PlayerCache(string, true, SaltGenerator.generateCaptcha(PreLogin.this.lengthC));
-                                                PreLogin.this.plugin.getPlayerCacheList().addCache(playerCache);
-                                                preLoginEvent.getConnection().setOnlineMode(true);
-                                                preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                            } else {
-                                                PreLogin.this.setOffline(preLoginEvent.getConnection(), string);
-                                                preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                            }
-                                        }
-
-                                        @Override
-                                        public void error(Exception exception) {
-                                        }
-                                    });
-                                } else if (string.equals("1")) {
-                                    PlayerCache playerCache = new PlayerCache(string, true, SaltGenerator.generateCaptcha(PreLogin.this.lengthC));
-                                    PreLogin.this.plugin.getPlayerCacheList().addCache(playerCache);
-                                    preLoginEvent.getConnection().setOnlineMode(true);
-                                    preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                } else {
-                                    PreLogin.this.setOffline(preLoginEvent.getConnection(), string);
-                                    preLoginEvent.completeIntent(PreLogin.this.plugin);
-                                }
-                            }
-
-                            @Override
-                            public void error(Exception exception) {
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void error(Exception exception) {
-                    }
-                });
-                return;
-            }
-            if (this.Method != 3) return;
-            PlayersMethods.verifyNameCheck(string, new CallbackMET<Boolean>(){
-
-                @Override
-                public void done(Boolean bl) {
-                    if (!bl) {
-                        preLoginEvent.setCancelReason(MessageHandler.sendMSG(PreLogin.this.nameCheck));
-                        preLoginEvent.setCancelled(true);
-                        preLoginEvent.completeIntent(PreLogin.this.plugin);
-                        return;
-                    }
-                    PreLogin.this.setOffline(preLoginEvent.getConnection(), string);
-                    preLoginEvent.completeIntent(PreLogin.this.plugin);
-                }
-
-                @Override
-                public void error(Exception exception) {
-                }
-            });
-            return;
+    private void handleRegisteredCracked(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        if (protectCrackedAccounts) {
+            // protect cracked account, so force set offline mode
+            setOfflineMode(connection, playerName);
+            event.completeIntent(plugin);
+        } else {
+            // no protect, check Mojang
+            checkMojangAndSetMode(event, connection, playerName);
         }
-        preLoginEvent.setCancelled(true);
-        preLoginEvent.completeIntent(this.plugin);
     }
 
-    private void setOffline(PendingConnection pendingConnection, String string) {
-        pendingConnection.setOnlineMode(false);
-        PlayerCache playerCache = new PlayerCache(string, false, SaltGenerator.generateCaptcha(this.lengthC));
-        this.plugin.getPlayerCacheList().addCache(playerCache);
+    private void handleMode2(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        verifyPlayerName(event, playerName, () -> {
+            checkPremiumStatusMode2(event, connection, playerName);
+        });
     }
 
-    private void floodgateConnection(PendingConnection pendingConnection, String string, Boolean bl) {
-        pendingConnection.setOnlineMode(false);
-        PlayerCache playerCache = new PlayerCache(string, bl, SaltGenerator.generateCaptcha(this.lengthC));
-        this.plugin.getPlayerCacheList().addCache(playerCache);
+    private void checkPremiumStatusMode2(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        SQL.getPlayerDataS(playerName, "premium", new CallbackSQL<String>() {
+            @Override
+            public void done(String premiumStatus) {
+                if (premiumStatus == null) {
+                    checkPremiumWhitelist(event, connection, playerName);
+                } else if (premiumStatus.equals("1")) {
+                    setPremiumMode(event, connection, playerName);
+                } else {
+                    setOfflineMode(connection, playerName);
+                    event.completeIntent(plugin);
+                }
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void checkPremiumWhitelist(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        SQL.isName(playerName, new CallbackSQL<Boolean>() {
+            @Override
+            public void done(Boolean isOnWhitelist) {
+                if (isOnWhitelist) {
+                    setPremiumMode(event, connection, playerName);
+                } else {
+                    setOfflineMode(connection, playerName);
+                    event.completeIntent(plugin);
+                }
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void handleMode3(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        verifyPlayerName(event, playerName, () -> {
+            setOfflineMode(connection, playerName);
+            event.completeIntent(plugin);
+        });
+    }
+
+    private void verifyPlayerName(final PreLoginEvent event, final String playerName, final Runnable onSuccess) {
+        PlayersMethods.verifyNameCheck(playerName, new CallbackMET<Boolean>() {
+            @Override
+            public void done(Boolean isValid) {
+                if (isValid) {
+                    onSuccess.run();
+                } else {
+                    cancelEvent(event, nameCheckMessage);
+                }
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void checkMojangAndSetMode(final PreLoginEvent event, final PendingConnection connection, final String playerName) {
+        plugin.getProfileGenerator().Generator(playerName, new CallbackAPI<UUID>() {
+            @Override
+            public void done(UUID uuid) {
+                if (uuid != null) {
+                    setPremiumMode(event, connection, playerName);
+                } else {
+                    setOfflineMode(connection, playerName);
+                    event.completeIntent(plugin);
+                }
+            }
+
+            @Override
+            public void error(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void setPremiumMode(PreLoginEvent event, PendingConnection connection, String playerName) {
+        connection.setOnlineMode(true);
+        PlayerCache cache = new PlayerCache(
+                playerName,
+                true,
+                SaltGenerator.generateCaptcha(captchaLength)
+        );
+        plugin.getPlayerCacheList().addCache(cache);
+        event.completeIntent(plugin);
+    }
+
+    private void setOfflineMode(PendingConnection connection, String playerName) {
+        connection.setOnlineMode(false);
+        createPlayerCache(connection, playerName, false);
+    }
+
+    private void createPlayerCache(PendingConnection connection, String playerName, boolean autoLogin) {
+        connection.setOnlineMode(false);
+        PlayerCache cache = new PlayerCache(
+                playerName,
+                autoLogin,
+                SaltGenerator.generateCaptcha(captchaLength)
+        );
+        plugin.getPlayerCacheList().addCache(cache);
+    }
+
+    private void cancelEvent(PreLoginEvent event, String message) {
+        if (message != null) {
+            event.setCancelReason(MessageHandler.sendMSG(message));
+        }
+        event.setCancelled(true);
+        event.completeIntent(plugin);
     }
 }
